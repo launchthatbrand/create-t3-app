@@ -121,13 +121,13 @@ export default function Home() {
                   Working with us is a pleasure
                 </h3>
                 <p className="text-lg font-light leading-relaxed mt-4 mb-4 text-blueGray-600">
-                  Don't let your uses guess by attaching tooltips and popoves to
+                  Don&apos;t let your uses guess by attaching tooltips and popoves to
                   any element. Just make sure you enable them first via
                   JavaScript.
                 </p>
-                <p className="text-lg font-light leading-relaxed mt-0 mb-4 text-blueGray-600">
+                <p className="text-lg font-light leading-=relaxed mt-0 mb-4 text-blueGray-600">
                   The kit comes with three pre-built pages to help you get
-                  started faster. You can change the text and images and you're
+                  started faster. You can change the text and images and you&apos;re
                   good to go. Just make sure you enable them first via
                   JavaScript.
                 </p>
@@ -211,7 +211,7 @@ export default function Home() {
                   <p className="mt-4 text-lg leading-relaxed text-blueGray-500">
                     The extension comes with three pre-built pages to help you
                     get started faster. You can change the text and images and
-                    you're good to go.
+                    you&apos;re good to go.
                   </p>
                   <ul className="list-none mt-6">
                     <li className="py-2">
@@ -464,7 +464,7 @@ export default function Home() {
                 </h6>
                 <p className="mt-2 mb-4 text-blueGray-400">
                   Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
+                  the bulk of the card&apos;s content.
                 </p>
               </div>
               <div className="w-full lg:w-3/12 px-4 text-center">
@@ -476,7 +476,7 @@ export default function Home() {
                 </h5>
                 <p className="mt-2 mb-4 text-blueGray-400">
                   Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
+                  the bulk of the card&apos;s content.
                 </p>
               </div>
               <div className="w-full lg:w-3/12 px-4 text-center">
@@ -488,7 +488,7 @@ export default function Home() {
                 </h5>
                 <p className="mt-2 mb-4 text-blueGray-400">
                   Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
+                  the bulk of the card&apos;s content.
                 </p>
               </div>
             </div>
@@ -543,8 +543,8 @@ export default function Home() {
                         Message
                       </label>
                       <textarea
-                        rows="4"
-                        cols="80"
+                        rows={4}
+                        cols={80}
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
                         placeholder="Type a message..."
                       />
