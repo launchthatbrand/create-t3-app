@@ -26,7 +26,7 @@ export default function RootLayout({
         <AdminSidebar />
       </div>
 
-      <div className="w-full bg-slate-300 p-5">
+      <div className="w-full bg-slate-100 p-5">
         <AdminNavbar />
         {children}
       </div>
