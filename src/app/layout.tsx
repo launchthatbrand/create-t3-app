@@ -1,9 +1,10 @@
 import "~/styles/globals.css";
+import "~/styles/tailwind.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import { Inter } from "next/font/google";
-import { cookies } from "next/headers";
-
 import { TRPCReactProvider } from "~/trpc/react";
+import { cookies } from "next/headers";
 
 const inter = Inter({
   subsets: ["latin"],
