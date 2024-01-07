@@ -1,5 +1,5 @@
 import "~/styles/globals.css";
-import "~/styles/tailwind.css";
+// import "~/styles/tailwind.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import { Inter } from "next/font/google";
@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+      <body /*className={`font-sans ${inter.variable}`}*/>
         <TRPCReactProvider cookies={cookies().toString()}>
           {children}
         </TRPCReactProvider>

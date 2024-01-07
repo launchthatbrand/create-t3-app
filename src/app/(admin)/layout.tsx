@@ -1,7 +1,3 @@
-import "~/styles/globals.css";
-import "~/styles/tailwind.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-
 import AdminNavbar from "../_components/AdminNavbar";
 import AdminSidebar from "../_components/AdminSidebar";
 import { Inter } from "next/font/google";
@@ -25,17 +21,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <div className="flex min-h-screen">
-        <div className="w-[300px] bg-slate-600 p-5">
-          <AdminSidebar />
-        </div>
-
-        <div className="w-full bg-slate-300 p-5">
-          <AdminNavbar />
-          {children}
-        </div>
+    <div className="flex min-h-screen">
+      <div className="bg-slate-600">
+        <AdminSidebar />
       </div>
-    </>
+
+      <div className="w-full bg-slate-300 p-5">
+        <AdminNavbar />
+        {children}
+      </div>
+    </div>
   );
 }
