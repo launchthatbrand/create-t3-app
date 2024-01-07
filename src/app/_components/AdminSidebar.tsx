@@ -4,22 +4,24 @@ import AdminSidebarNavigation from "./AdminSidebarNavigation";
 import { AiFillEnvironment } from "react-icons/ai";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { BsChevronDown } from "react-icons/bs";
+import Link from "next/link";
 import { RiDashboardFill } from "react-icons/ri";
+import { buttonVariants } from "@/components/ui/button";
 import { useState } from "react";
 
 function AdminSidebar() {
   const [open, setOpen] = useState(true);
   const [submenuOpen, setSubmenuOpen] = useState(false);
   const Menus = [
-    { title: "Dashboard" },
+    { title: "Dashboard", href: "/dashboard" },
     { title: "Pages" },
     { title: "Media", spacing: true },
     {
-      title: "Projects",
+      title: "Request Forms",
       submenu: true,
       submenuItems: [
-        { title: "Submenu 1" },
-        { title: "Submenu 2" },
+        { title: "Purchase Request", href: "/forms/purchaserequest" },
+        { title: "Travel Request", href: "/forms/travelrequest" },
         { title: "Submenu 3" },
       ],
     },
@@ -60,13 +62,16 @@ function AdminSidebar() {
               <span className="float-left block text-2xl">
                 <RiDashboardFill />
               </span>
-              <span
+              <Link
+                key={index}
+                href={menu.href ?? "#"}
                 className={`flex-1 origin-left text-base font-medium duration-300 ${
                   !open && "scale-0"
                 }`}
               >
                 {menu.title}
-              </span>
+              </Link>
+
               {menu.submenu && open && (
                 <BsChevronDown
                   className={`${submenuOpen && "rotate-180"}`}
@@ -75,16 +80,20 @@ function AdminSidebar() {
               )}
             </li>
             {menu.submenu && submenuOpen && open && (
-              <ul>
+              <div>
                 {menu.submenuItems.map((submenuItem, index) => (
-                  <li
+                  <Link
                     key={index}
-                    className="mt-2 flex cursor-pointer items-center gap-x-4 rounded-md p-2 px-5 text-sm hover:bg-white"
+                    href={submenuItem.href ?? "#"}
+                    className={
+                      buttonVariants({ variant: "ghost" }) +
+                      "flex w-full items-start !justify-start bg-transparent text-left"
+                    }
                   >
                     {submenuItem.title}
-                  </li>
+                  </Link>
                 ))}
-              </ul>
+              </div>
             )}
           </>
         ))}
