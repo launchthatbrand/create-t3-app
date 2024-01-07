@@ -1,4 +1,6 @@
+import { Input } from "~/components/ui/input";
 import React from "react";
+import UserDropdown from "./UserDropdown";
 
 function AdminNavbar() {
   return (
@@ -20,7 +22,7 @@ function AdminNavbar() {
               <span className="text-blueGray-300 absolute  z-10 h-full w-8 items-center justify-center rounded bg-transparent py-3 pl-3 text-center text-base font-normal leading-snug">
                 <i className="fas fa-search"></i>
               </span>
-              <input
+              <Input
                 type="text"
                 placeholder="Search here..."
                 className="placeholder-blueGray-300 text-blueGray-600 relative w-full rounded border-0 bg-white px-3 py-3 pl-10 text-sm shadow outline-none focus:outline-none focus:ring"
@@ -29,7 +31,7 @@ function AdminNavbar() {
           </form>
           {/* User */}
           <ul className="hidden list-none flex-col items-center md:flex md:flex-row">
-            {/* <UserDropdown /> */}
+            <UserDropdown />
           </ul>
         </div>
       </nav>
