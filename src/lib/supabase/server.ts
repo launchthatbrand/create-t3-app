@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
+"use server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export const supabaseServer = () => {
+export default async function supabaseServer() {
   const cookieStore = cookies();
 
-  createServerClient(
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -21,4 +25,4 @@ export const supabaseServer = () => {
       },
     },
   );
-};
+}
