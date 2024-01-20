@@ -11,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { HiEye, HiEyeOff } from "react-icons/hi";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,8 @@ const formSchema = z.object({
 
 function LoginPage() {
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = React.useState(false);
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -108,7 +111,26 @@ function LoginPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="shadcn"
+                        {...field}
+                      />
+                      <div className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3 text-gray-400">
+                        {showPassword ? (
+                          <HiEyeOff
+                            className="h-6 w-6"
+                            onClick={togglePasswordVisibility}
+                          />
+                        ) : (
+                          <HiEye
+                            className="h-6 w-6"
+                            onClick={togglePasswordVisibility}
+                          />
+                        )}
+                      </div>
+                    </div>
                   </FormControl>
                   <FormDescription>This is your password.</FormDescription>
                   <FormMessage />
