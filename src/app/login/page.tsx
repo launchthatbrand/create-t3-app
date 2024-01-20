@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { auth } from "~/lib/firebase/client";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
@@ -29,6 +30,7 @@ const formSchema = z.object({
 });
 
 function LoginPage() {
+  const { toast } = useToast();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,9 +52,17 @@ function LoginPage() {
         void updateProfile(userCredentials.user, {
           displayName: name,
         });
+        toast({
+          title: "Registered Sucessfully",
+          description: userCredentials.user.email,
+        });
       })
       .catch((error) => {
-        console.error(error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: `${error}`,
+        });
       });
   }
   return (
