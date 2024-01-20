@@ -26,6 +26,9 @@ dependencies:
   '@trpc/server':
     specifier: ^10.37.1
     version: 10.45.0
+  binary-uuid:
+    specifier: ^2.0.3
+    version: 2.0.3
   drizzle-orm:
     specifier: ^0.28.5
     version: 0.28.6(@planetscale/database@1.14.0)(mysql2@3.7.1)
@@ -1048,6 +1051,12 @@ packages:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
     dev: true
+
+  /binary-uuid@2.0.3:
+    resolution: {integrity: sha512-WaQMBLVgPUuHUHAoTRuafVwF3mskYKAwuE1+9D+tI1RK/eho+wvq8aj4UZhpboelGkifURzRdlIweRkPrgnxWA==}
+    dependencies:
+      uuid: 7.0.3
+    dev: false
 
   /brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -3630,6 +3639,11 @@ packages:
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
+
+  /uuid@7.0.3:
+    resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
+    hasBin: true
+    dev: false
 
   /watchpack@2.4.0:
     resolution: {integrity: sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg==}
