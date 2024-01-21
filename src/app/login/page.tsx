@@ -95,26 +95,10 @@ function LoginPage() {
   }
   return (
     <div className="flex min-h-screen flex-1 items-center justify-center">
-      <div className="w-64 rounded-md bg-slate-300 p-5 shadow-md">
-        <h3>Register Form</h3>
+      <div className="min-h-[650px] w-64 rounded-md bg-slate-300 p-5 shadow-md">
+        <h3>Login Form</h3>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="shadcn" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="email"
@@ -162,12 +146,14 @@ function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button className="w-full" type="submit">
+              Login
+            </Button>
           </form>
         </Form>
-        <div className="mt-10 text-center">Already Have an account?</div>
+        <div className="mt-10 text-center">Don't have an account?</div>
         <Button className="w-full" onClick={() => router.push("/register")}>
-          Login
+          Register
         </Button>
       </div>
     </div>

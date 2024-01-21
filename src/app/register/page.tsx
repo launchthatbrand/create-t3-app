@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/form";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 import React, { useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import {
   useCreateUserWithEmailAndPassword,
   useUpdateProfile,
@@ -95,7 +93,7 @@ function LoginPage() {
   }
   return (
     <div className="flex min-h-screen flex-1 items-center justify-center">
-      <div className="w-64 rounded-md bg-slate-300 p-5 shadow-md">
+      <div className="min-h-[650px] w-64 rounded-md bg-slate-300 p-5 shadow-md">
         <h3>Register Form</h3>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -162,13 +160,17 @@ function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button className="w-full" type="submit">
+              Register
+            </Button>
           </form>
         </Form>
-        <div className="mt-10 text-center">Dont have an account?</div>
-        <Button className="w-full" onClick={() => router.push("/login")}>
-          Register
-        </Button>
+        <div className="mt-10 text-center">
+          Already have an account?
+          <Button className="w-full" onClick={() => router.push("/login")}>
+            Login
+          </Button>
+        </div>
       </div>
     </div>
   );
