@@ -165,9 +165,9 @@ function LoginPage() {
             <Button type="submit">Submit</Button>
           </form>
         </Form>
-        <div className="mt-10 text-center">Already Have an account?</div>
-        <Button className="w-full" onClick={() => router.push("/register")}>
-          Login
+        <div className="mt-10 text-center">Dont have an account?</div>
+        <Button className="w-full" onClick={() => router.push("/login")}>
+          Register
         </Button>
       </div>
     </div>
