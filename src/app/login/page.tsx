@@ -151,7 +151,7 @@ function LoginPage() {
             </Button>
           </form>
         </Form>
-        <div className="mt-10 text-center">Don't have an account?</div>
+        <div className="mt-10 text-center">Don&apost have an account?</div>
         <Button className="w-full" onClick={() => router.push("/register")}>
           Register
         </Button>
