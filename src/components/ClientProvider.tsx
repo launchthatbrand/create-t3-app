@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  ConnectKitButton,
-  ConnectKitProvider,
-  getDefaultConfig,
-} from "connectkit";
-import { WagmiConfig, createConfig } from "wagmi";
+import { Config, WagmiConfig, createConfig } from "wagmi";
+import { ConnectKitProvider, SIWESession, getDefaultConfig } from "connectkit";
+
+import { siweClient } from "@/utils/siweClient";
 
 const wagmiConfig = createConfig(
   getDefaultConfig({
@@ -29,8 +27,10 @@ export default function ClientProvider({
   children: React.ReactNode;
 }) {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <ConnectKitProvider>{children}</ConnectKitProvider>
+    <WagmiConfig config={wagmiConfig as unknown as Config<any, any>}>
+      <siweClient.Provider>
+        <ConnectKitProvider>{children}</ConnectKitProvider>
+      </siweClient.Provider>
     </WagmiConfig>
   );
 }
