@@ -1,5 +1,6 @@
 import "~/styles/globals.css";
 
+import ClientProvider from "~/components/ClientProvider";
 import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "@/components/ui/toaster";
@@ -26,8 +27,10 @@ export default function RootLayout({
       <body
         className={`font-sans ${inter.variable} flex min-h-screen flex-col items-center justify-center`}
       >
-        <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
-        <Toaster />
+        <ClientProvider>
+          <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
+          <Toaster />
+        </ClientProvider>
       </body>
     </html>
   );
