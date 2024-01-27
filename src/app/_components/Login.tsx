@@ -3,11 +3,17 @@
 import React from "react";
 import { auth } from "../lib/firebase/client";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRedirect } from "../lib/shared/useRedirect";
+import { useRedirectParam } from "../lib/shared/useRedirectParams";
 
 function Login() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [hasLogged, setHasLogged] = React.useState(false);
+  const redirect = useRedirectParam();
+
+  useRedirect();
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -17,8 +23,16 @@ function Login() {
     );
     setHasLogged(true);
   }
+
   return (
     <div>
+      {hasLogged && (
+        <div>
+          <span>
+            Redirecting to <strong>{redirect ?? "/"}</strong>
+          </span>
+        </div>
+      )}
       {!hasLogged && (
         <>
           <h1>Login</h1>
