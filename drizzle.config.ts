@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     connectionString: env.DATABASE_URL,
   },
-  tablesFilter: ["create-t3-app-v7.22.0-nextauth_*"],
+  tablesFilter: ["create-t3-app_*"],
 } satisfies Config;
