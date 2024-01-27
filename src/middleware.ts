@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
       privateKey: process.env.FIREBASE_PRIVATE_KEY!,
     },
-    handleValidToken: async ({ token, decodedToken }, headers) => {
+    handleValidToken: async ({}, headers) => {
       console.log("Authenticated!");
       // Authenticated user should not be able to access /login, /register and /reset-password routes
 
