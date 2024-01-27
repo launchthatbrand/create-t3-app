@@ -1,9 +1,13 @@
 import "~/styles/globals.css";
 
-import { Inter } from "next/font/google";
-import { headers } from "next/headers";
+import { Tokens, getTokens } from "next-firebase-auth-edge";
+import { cookies, headers } from "next/headers";
 
+import { AuthProvider } from "./provider/AuthProvider";
+import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
+import { User } from "./context/AuthContext";
+import { filterStandardClaims } from "next-firebase-auth-edge/lib/auth/claims";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,15 +20,52 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+const toUser = ({ decodedToken }: Tokens): User => {
+  const {
+    uid,
+    email,
+    picture: photoURL,
+    email_verified: emailVerified,
+    phone_number: phoneNumber,
+    name: displayName,
+  } = decodedToken;
+
+  const customClaims = filterStandardClaims(decodedToken);
+
+  return {
+    uid,
+    email: email ?? null,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    displayName: displayName ?? null,
+    photoURL: photoURL ?? null,
+    phoneNumber: phoneNumber ?? null,
+    emailVerified: emailVerified ?? false,
+    customClaims,
+  };
+};
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const tokens = await getTokens(cookies(), {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+    cookieName: "AuthToken",
+    cookieSignatureKeys: ["secret1", "secret2"],
+    serviceAccount: {
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY!,
+    },
+  });
+  const user = tokens ? toUser(tokens) : null;
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
+        <AuthProvider serverUser={user}>
+          <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
+        </AuthProvider>
       </body>
     </html>
   );
