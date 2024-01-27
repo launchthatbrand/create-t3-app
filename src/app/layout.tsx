@@ -54,7 +54,9 @@ export default async function RootLayout({
   const user = tokens ? toUser(tokens) : null;
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+      <body
+        className={`font-sans ${inter.variable} flex min-h-screen flex-1 items-center justify-center`}
+      >
         <AuthProvider serverUser={user}>
           <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
         </AuthProvider>
