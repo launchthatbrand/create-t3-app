@@ -57,16 +57,6 @@ function Login() {
     setHasLogged(true);
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    await signInWithEmailAndPassword(auth, email, password).then((user) =>
-      console.log("user", user),
-    );
-    setHasLogged(true);
-  }
-
   return (
     <div>
       {hasLogged && (
