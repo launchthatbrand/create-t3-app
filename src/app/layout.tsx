@@ -7,7 +7,6 @@ import { AuthProvider } from "./provider/AuthProvider";
 import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
 import { User } from "./context/AuthContext";
-import { authConfig } from "~/lib/firebase/server";
 import { filterStandardClaims } from "next-firebase-auth-edge/lib/auth/claims";
 
 const inter = Inter({
@@ -50,7 +49,16 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const tokens = await getTokens(cookies(), authConfig);
+  const tokens = await getTokens(cookies(), {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+    cookieName: "AuthToken",
+    cookieSignatureKeys: ["secret1", "secret2"],
+    serviceAccount: {
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY!,
+    },
+  });
   const user = tokens ? toUser(tokens) : null;
   return (
     <html lang="en">
