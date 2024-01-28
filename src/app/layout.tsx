@@ -1,12 +1,14 @@
 import "~/styles/globals.css";
 
-import { Tokens, getTokens } from "next-firebase-auth-edge";
+import { type Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies, headers } from "next/headers";
+
+import { Toaster } from "@/components/ui/toaster";
 
 import { AuthProvider } from "./provider/AuthProvider";
 import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
-import { User } from "./context/AuthContext";
+import { type User } from "./context/AuthContext";
 import { authConfig } from "./lib/firebase/server";
 import { filterStandardClaims } from "next-firebase-auth-edge/lib/auth/claims";
 
@@ -60,6 +62,7 @@ export default async function RootLayout({
         <AuthProvider serverUser={user}>
           <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
         </AuthProvider>
+        <Toaster />
       </body>
     </html>
   );

@@ -1,18 +1,26 @@
 "use client";
 
+import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-import { api } from "~/trpc/react";
+import { useToast } from "@/components/ui/use-toast";
 
 export function CreatePost() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const { toast } = useToast();
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
       router.refresh();
       setName("");
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "ERROR",
+        description: `${error.message}`,
+      });
     },
   });
 

@@ -1,4 +1,8 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 import { posts } from "~/server/db/schema";
 import { z } from "zod";
@@ -12,7 +16,7 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
@@ -20,6 +24,7 @@ export const postRouter = createTRPCRouter({
 
       await ctx.db.insert(posts).values({
         name: input.name,
+        createdById: ctx.tokens?.decodedToken.uid,
       });
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
