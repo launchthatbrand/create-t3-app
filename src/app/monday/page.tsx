@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "../_components/ui/button";
+import Link from "next/link";
 
 const monday = mondaySdk();
 
@@ -63,7 +64,14 @@ async function page() {
                 {workspace.description ?? "**Workspace Description"}
               </TableCell>
               <TableCell>
-                <Button>Go To Workspace</Button>
+                <Button asChild>
+                  <Link
+                    target="_blank"
+                    href={`https://qcausa.monday.com/workspaces/${workspace.id}`}
+                  >
+                    Go To Workspace
+                  </Link>
+                </Button>
               </TableCell>
             </TableRow>
           ))}
