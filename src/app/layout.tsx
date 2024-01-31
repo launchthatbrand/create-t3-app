@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`font-sans ${inter.variable} flex min-h-screen flex-1 items-center justify-center`}
+        className={`font-sans ${inter.variable} flex min-h-screen flex-1 items-center justify-center bg-[#181b34]`}
       >
         <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
         <Toaster />
