@@ -3,9 +3,9 @@ import RegisterForm from "../_components/RegisterForm";
 
 function RegisterPage() {
   return (
-    <div>
-      <div>RegisterPage</div>
-      <RegisterForm />;
+    <div className="rounded-md bg-slate-50 p-5 shadow-md">
+      <p className="text-center font-medium">Register Page</p>
+      <RegisterForm />
     </div>
   );
 }
