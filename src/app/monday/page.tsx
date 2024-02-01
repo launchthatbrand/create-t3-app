@@ -1,84 +1,111 @@
-import React from "react";
-import mondaySdk from "monday-sdk-js";
-import { type APIOptions } from "monday-sdk-js/types/client-api.interface";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "../_components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { type Workspace, fetchAllWorkspaces } from "./action";
+
+import { useAuth } from "~/app/_components/ClientProvider";
 import Link from "next/link";
+import { Button } from "~/app/_components/ui/button";
 
-const monday = mondaySdk();
+function MondayServer() {
+  const { isAuthenticated } = useAuth();
+  const [workspaces, setWorkspaces] = useState<Workspace[] | undefined>(
+    undefined,
+  );
 
-const query = "{ workspaces (limit:100) {name id description} }";
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Call fetchData only if the user is authenticated
+      const loadData = async () => {
+        try {
+          const fetchedData = await fetchAllWorkspaces();
+          console.log("fetchedData", fetchedData?.data.workspaces);
+          setWorkspaces(fetchedData?.data.workspaces);
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+          // Handle error or set data to null/empty state
+        }
+      };
 
-interface Workspace {
-  name: string;
-  id: string;
-  description: string;
-}
+      void loadData();
+    }
+  }, [isAuthenticated]);
 
-interface MondayApiResponse {
-  data: {
-    workspaces: Workspace[];
-    account_id: number;
-  };
-}
-
-const options: APIOptions = {
-  token: process.env.MONDAY_TOKEN,
-};
-
-async function page() {
-  const {
-    data: { workspaces },
-  } = (await monday.api(query, options)) as MondayApiResponse;
-  console.log("monday_response", JSON.stringify(workspaces));
-
+  if (!isAuthenticated) return <p>User is not authenticated</p>;
   return (
-    <div className="m-5 w-full rounded-md bg-[#2f324d] shadow-md">
-      <Table className="text-white">
-        <TableHeader>
-          <TableRow className="!border-[#4b4e69]">
-            <TableHead className="w-[200px] text-white">
-              Workspace Name
-            </TableHead>
-            <TableHead className="text-white">Workspace Division</TableHead>
-            <TableHead className="text-white">Workspace ID</TableHead>
-            <TableHead className="text-white">Description</TableHead>
-            <TableHead className="text-white">Workspace Link</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {workspaces.map((workspace) => (
-            <TableRow key={workspace.id} className="!border-[#4b4e69]">
-              <TableCell>{workspace.name}</TableCell>
-              <TableCell>**Division ID**</TableCell>
-              <TableCell>{workspace.id}</TableCell>
-              <TableCell>
-                {workspace.description ?? "**Workspace Description"}
-              </TableCell>
-              <TableCell>
-                <Button asChild>
-                  <Link
-                    target="_blank"
-                    href={`https://qcausa.monday.com/workspaces/${workspace.id}`}
-                  >
-                    Go To Workspace
-                  </Link>
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="w-full text-white">
+      {workspaces ? (
+        <div className="m-5 w-full rounded-md bg-[#2f324d] shadow-md">
+          <Table>
+            <TableHeader>
+              <TableRow className="!border-[#4b4e69]">
+                <TableHead className="w-[200px] text-white">
+                  Workspace Name
+                </TableHead>
+                <TableHead className="text-white">Workspace Division</TableHead>
+                <TableHead className="text-white">Workspace ID</TableHead>
+                <TableHead className="text-white">Description</TableHead>
+                <TableHead className="text-white">Display Options</TableHead>
+                <TableHead className="text-white">Workspace Link</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {workspaces.map((workspace) => (
+                <TableRow key={workspace.id} className="!border-[#4b4e69]">
+                  <TableCell>{workspace.name}</TableCell>
+                  <TableCell>**Division ID**</TableCell>
+                  <TableCell>{workspace.id}</TableCell>
+                  <TableCell>
+                    {workspace.description ?? "**Workspace Description"}
+                  </TableCell>
+                  <TableCell>
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Display Options" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Show To All Staff</SelectItem>
+                        <SelectItem value="dark">Admin View Only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Button asChild>
+                      <Link
+                        target="_blank"
+                        href={`https://qcausa.monday.com/workspaces/${workspace.id}`}
+                      >
+                        Go To Workspace
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          )
+        </div>
+      ) : (
+        <p>Loading workspaces...</p>
+      )}
     </div>
   );
 }
 
-export default page;
+export default MondayServer;
