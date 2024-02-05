@@ -1,11 +1,19 @@
 import { CreatePost } from "~/app/_components/create-post";
 import Link from "next/link";
+import SignInSignOutButton from "./_components/SignInSignOutButton";
 import { api } from "~/trpc/server";
 import { getServerAuthSession } from "~/server/auth";
+import supabaseServer from "~/lib/supabase/server";
 
 export default async function Home() {
   const hello = await api.post.hello.query({ text: "from tRPC" });
   const session = await getServerAuthSession();
+
+  const supabase = await supabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  console.log("page_user", user);
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
@@ -47,11 +55,12 @@ export default async function Home() {
               {session && <span>Logged in as {session.user?.name}</span>}
             </p>
             <Link
-              href={session ? "/api/auth/signout" : "/api/auth/signin"}
+              href={user ? "/api/auth/signout" : "/api/auth/signin"}
               className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
             >
-              {session ? "Sign out" : "Sign in"}
+              {user ? "Sign out" : "Sign in"}
             </Link>
+            <SignInSignOutButton />
           </div>
         </div>
 

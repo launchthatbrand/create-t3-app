@@ -11,17 +11,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  signInWithEmailAndPassword,
-  signUpWithEmailAndPassword,
-} from "../auth/actions";
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { signInWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const FormSchema = z.object({
@@ -32,6 +30,7 @@ const FormSchema = z.object({
 });
 
 export default function LoginForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -66,6 +65,7 @@ export default function LoginForm() {
         ),
       });
     }
+    router.push("/");
   }
 
   return (
