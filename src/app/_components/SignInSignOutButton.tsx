@@ -6,14 +6,14 @@ import readUserSession from "~/lib/actions";
 import supabaseServer from "~/lib/supabase/server";
 import { type User } from "@supabase/supabase-js";
 
-interface UserMetadata {
-  name: string;
-  // Add other metadata fields as needed
-}
+// interface UserMetadata {
+//   first_name: string;
+//   // Add other metadata fields as needed
+// }
 
-interface ExtendedUser extends User {
-  user_metadata?: UserMetadata;
-}
+// interface ExtendedUser extends User {
+//   user_metadata?: UserMetadata | undefined;
+// }
 
 import {
   DropdownMenu,
@@ -30,7 +30,7 @@ async function SignInSignOutButton() {
   const {
     data: { session },
   } = await readUserSession();
-  const user = session?.user as ExtendedUser;
+  const user = session?.user;
 
   async function handleAuthAction() {
     "use server";
@@ -59,14 +59,14 @@ async function SignInSignOutButton() {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <UserAvatar
-          name={user.user_metadata?.name}
-          image={user.user_metadata?.name}
+          name={user?.user_metadata?.firstName}
+          image={user?.user_metadata?.profileImage}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel className="flex flex-col">
-          {session.user?.user_metadata.first_name}
-          <sub>{session.user?.id}</sub>
+        <DropdownMenuLabel className="flex flex-col space-y-1">
+          <span>{user?.user_metadata?.firstName}</span>
+          <sub>{user?.id}</sub>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
@@ -89,7 +89,13 @@ async function SignInSignOutButton() {
             </>
           )} */}
         <DropdownMenuItem>Dashboard</DropdownMenuItem>
-        <DropdownMenuItem>Sign Out</DropdownMenuItem>
+        <DropdownMenuItem>
+          <form action={handleAuthAction}>
+            <Button variant="link" className="p-0">
+              Sign Out
+            </Button>
+          </form>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

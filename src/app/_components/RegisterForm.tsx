@@ -19,11 +19,13 @@ import { cn } from "@/lib/utils";
 import { signUpWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const FormSchema = z
   .object({
-    name: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
     email: z.string().email(),
     password: z.string().min(6, {
       message: "Password is required.",
@@ -37,10 +39,12 @@ const FormSchema = z
     path: ["confirm"],
   });
 export default function RegisterForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: "Dev Dev",
+      firstName: "Dev",
+      lastName: "Dev",
       email: "Dev1@gmail.com",
       password: "dev1234$",
       confirm: "dev1234$",
@@ -72,6 +76,7 @@ export default function RegisterForm() {
           </pre>
         ),
       });
+      router.push("/");
     }
   }
 
@@ -80,10 +85,28 @@ export default function RegisterForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-80 space-y-6">
         <FormField
           control={form.control}
-          name="name"
+          name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Dev Dev"
+                  {...field}
+                  type="text"
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Dev Dev"
