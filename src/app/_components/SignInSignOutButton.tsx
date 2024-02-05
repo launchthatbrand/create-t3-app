@@ -1,19 +1,41 @@
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { Button } from "./ui/button";
 import React from "react";
 import readUserSession from "~/lib/actions";
 import supabaseServer from "~/lib/supabase/server";
-import { useAuth } from "~/lib/context/AuthContext";
+import { type User } from "@supabase/supabase-js";
+
+interface UserMetadata {
+  name: string;
+  // Add other metadata fields as needed
+}
+
+interface ExtendedUser extends User {
+  user_metadata?: UserMetadata;
+}
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import UserAvatar from "./UserAvatar";
 
 async function SignInSignOutButton() {
-  const { data } = await readUserSession();
+  const {
+    data: { session },
+  } = await readUserSession();
+  const user = session?.user as ExtendedUser;
 
-  console.log("button_readUserSession", data);
   async function handleAuthAction() {
     "use server";
     const supabase = await supabaseServer();
-    if (data) {
+    if (session) {
       // If a user is detected, sign out
       await supabase.auth.signOut();
       console.log("Signed Out");
@@ -26,10 +48,50 @@ async function SignInSignOutButton() {
 
   // if (loading) return <div>Loading...</div>;
 
+  if (!session)
+    return (
+      <form action={handleAuthAction}>
+        <Button variant={"outline"}>Sign In</Button>
+      </form>
+    );
+
   return (
-    <form action={handleAuthAction}>
-      <Button>{data.session ? "Sign Out" : "Sign In"}</Button>
-    </form>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <UserAvatar
+          name={user.user_metadata?.name}
+          image={user.user_metadata?.name}
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel className="flex flex-col">
+          {session.user?.user_metadata.first_name}
+          <sub>{session.user?.id}</sub>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        {/* {subscription === undefined && (
+            <DropdownMenuItem>
+              <Loader2 className="mr-2 h-4 w-full animate-spin items-center" />
+            </DropdownMenuItem>
+          )}
+
+          {subscription?.role === "pro" && (
+            <>
+              <DropdownMenuLabel className="flex animate-pulse items-center justify-center space-x-1 text-xs text-[#e035c1]">
+                <StarIcon fill="#E935c1" />
+                <p>PRO</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <ManageAccountButton />
+              </DropdownMenuItem>
+            </>
+          )} */}
+        <DropdownMenuItem>Dashboard</DropdownMenuItem>
+        <DropdownMenuItem>Sign Out</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

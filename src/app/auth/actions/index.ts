@@ -3,6 +3,7 @@
 import supabaseServer from "~/lib/supabase/server";
 
 export async function signUpWithEmailAndPassword(data: {
+  name: string;
   email: string;
   password: string;
   confirm: string;
@@ -11,6 +12,11 @@ export async function signUpWithEmailAndPassword(data: {
   const result = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
+    options: {
+      data: {
+        first_name: data?.name,
+      },
+    },
   });
 
   return result;
