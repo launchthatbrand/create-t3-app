@@ -10,6 +10,8 @@ import { env } from "~/env.mjs";
 import { db } from "~/server/db";
 import { mysqlTable } from "~/server/db/schema";
 
+import type { Adapter } from "next-auth/adapters";
+
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -46,7 +48,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: DrizzleAdapter(db, mysqlTable),
+  adapter: DrizzleAdapter(db, mysqlTable) as Adapter,
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
