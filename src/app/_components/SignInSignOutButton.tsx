@@ -1,29 +1,66 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { redirect } from "next/navigation";
 
 import { Button } from "./ui/button";
 import React from "react";
-import UserAvatar from "./UserAvatar";
 import readUserSession from "~/lib/actions";
+import supabaseServer from "~/lib/supabase/server";
+import { type User } from "@supabase/supabase-js";
 
-async function AuthButton() {
+// interface UserMetadata {
+//   first_name: string;
+//   // Add other metadata fields as needed
+// }
+
+// interface ExtendedUser extends User {
+//   user_metadata?: UserMetadata | undefined;
+// }
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import UserAvatar from "./UserAvatar";
+
+async function SignInSignOutButton() {
   const {
     data: { session },
   } = await readUserSession();
   const user = session?.user;
 
+  async function handleAuthAction() {
+    "use server";
+    const supabase = await supabaseServer();
+    if (session) {
+      // If a user is detected, sign out
+      await supabase.auth.signOut();
+      console.log("Signed Out");
+      redirect("/login"); // Optionally redirect to login page after signing out
+    } else {
+      // If no user is detected, redirect to sign-in page
+      redirect("/login"); // Adjust the path to your sign-in page as necessary
+    }
+  }
+
+  // if (loading) return <div>Loading...</div>;
+
   if (!session)
-  return (
-    <form >
-      <Button variant={"outline"}>Sign In</Button>
-    </form>
-  );
+    return (
+      <form action={handleAuthAction}>
+        <Button variant={"outline"}>Sign In</Button>
+      </form>
+    );
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <UserAvatar
-          name={user?.user_metadata?.firstName ?? "Dev"}
-          // image={user?.user_metadata?.profileImage}
+          name={user?.user_metadata?.firstName}
+          image={user?.user_metadata?.profileImage}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -53,7 +90,7 @@ async function AuthButton() {
           )} */}
         <DropdownMenuItem>Dashboard</DropdownMenuItem>
         <DropdownMenuItem>
-          <form >
+          <form action={handleAuthAction}>
             <Button variant="link" className="p-0">
               Sign Out
             </Button>
@@ -64,4 +101,4 @@ async function AuthButton() {
   );
 }
 
-export default AuthButton;
+export default SignInSignOutButton;

@@ -1,7 +1,12 @@
+"use client"
+
+import { Button } from "./ui/button";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 function Logo() {
-  return <div className="rounded-md bg-white p-2 px-5">Logo</div>;
+  const router = useRouter();
+  return <Button variant={"outline"} onClick={()=> router.push('/')}>Logo</Button>;
 }
 
 export default Logo;
