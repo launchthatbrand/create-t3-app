@@ -1,15 +1,18 @@
-import Link from "next/link";
-
 import { CreatePost } from "~/app/_components/create-post";
-import { getServerAuthSession } from "~/server/auth";
+import Link from "next/link";
 import { api } from "~/trpc/server";
+import { getServerAuthSession } from "~/server/auth";
+import supabaseServer from "~/lib/supabase/server";
 
 export default async function Home() {
   const hello = await api.post.hello.query({ text: "from tRPC" });
-  const session = await getServerAuthSession();
+  const supabase = await supabaseServer();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+    <div className="flex-col items-center justify-center text-white">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
           Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
@@ -45,7 +48,7 @@ export default async function Home() {
 
           <div className="flex flex-col items-center justify-center gap-4">
             <p className="text-center text-2xl text-white">
-              {session && <span>Logged in as {session.user?.name}</span>}
+              {session && <span>Logged in as {session.user.email}</span>}
             </p>
             <Link
               href={session ? "/api/auth/signout" : "/api/auth/signin"}
@@ -58,7 +61,7 @@ export default async function Home() {
 
         <CrudShowcase />
       </div>
-    </main>
+    </div>
   );
 }
 
