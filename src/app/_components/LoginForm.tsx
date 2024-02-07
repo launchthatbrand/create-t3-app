@@ -5,21 +5,17 @@ import * as z from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  signInWithEmailAndPassword,
-  signUpWithEmailAndPassword,
-} from "../auth/actions";
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { signInWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -67,6 +63,7 @@ export default function LoginForm() {
           </pre>
         ),
       });
+      router.push("/");
     }
   }
 

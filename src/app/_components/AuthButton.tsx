@@ -1,22 +1,59 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 import { Button } from "./ui/button";
 import React from "react";
 import UserAvatar from "./UserAvatar";
 import readUserSession from "~/lib/actions";
+import { redirect } from "next/navigation";
+import { signOut } from "../auth/actions";
+import { toast } from "./ui/use-toast";
 
 async function AuthButton() {
+  async function signOutUser() {
+    "use server";
+    console.log("signout submitted");
+    const result = await signOut();
+    const { error } = result;
+
+    if (error?.message) {
+      toast({
+        title: "Error:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{error.message}</code>
+          </pre>
+        ),
+      });
+    } else {
+      toast({
+        title: "Sucessfully Logged Out:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            Sucessfully Logged Out
+          </pre>
+        ),
+      });
+      redirect("/login");
+    }
+  }
   const {
     data: { session },
   } = await readUserSession();
   const user = session?.user;
 
   if (!session)
-  return (
-    <form >
-      <Button variant={"outline"}>Sign In</Button>
-    </form>
-  );
+    return (
+      <form>
+        <Button variant={"outline"}>Sign In</Button>
+      </form>
+    );
 
   return (
     <DropdownMenu>
@@ -53,7 +90,7 @@ async function AuthButton() {
           )} */}
         <DropdownMenuItem>Dashboard</DropdownMenuItem>
         <DropdownMenuItem>
-          <form >
+          <form action={signOutUser}>
             <Button variant="link" className="p-0">
               Sign Out
             </Button>
