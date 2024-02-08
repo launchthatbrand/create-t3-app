@@ -20,6 +20,7 @@ export const postRouter = createTRPCRouter({
 
       await ctx.db.insert(posts).values({
         name: input.name,
+        createdById: "1234",
       });
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
