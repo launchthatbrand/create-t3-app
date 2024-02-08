@@ -22,18 +22,10 @@ export const postRouter = createTRPCRouter({
         name: input.name,
       });
     }),
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    const posts = await ctx.db.query.posts.findMany(); // Adjust this line to match your actual query
-    return posts; // The uuid field will now be a string UUID, not a binary UUID
-  }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
     });
   }),
-
-  // getSecretMessage: protectedProcedure.query(() => {
-  //   return "you can now see this secret message!";
-  // }),
 });
