@@ -13,6 +13,7 @@ import {
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
+import { ConnectKitButton } from "connectkit";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { signInWithEmailAndPassword } from "~/lib/actions/auth";
@@ -69,6 +70,7 @@ export default function LoginForm() {
 
   return (
     <div className="flex flex-col items-center">
+      <ConnectKitButton />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
