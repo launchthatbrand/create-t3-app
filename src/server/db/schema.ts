@@ -41,7 +41,9 @@ export const binary = customType<{
   },
 });
 
-export const mysqlTable = mysqlTableCreator((name) => `create-t3-app_${name}`);
+export const mysqlTable = mysqlTableCreator(
+  (name) => `create-t3-app-custom_${name}`,
+);
 
 export const posts = mysqlTable(
   "post",
