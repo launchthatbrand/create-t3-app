@@ -14,3 +14,14 @@ export async function signInWithEmailAndPassword(data: {
 
   return result;
 }
+
+export default async function readUserSession() {
+  const supabase = await supabaseServer();
+  return supabase.auth.getSession();
+}
+
+export async function signOut() {
+  const supabase = await supabaseServer();
+  const result = await supabase.auth.signOut();
+  return result;
+}
