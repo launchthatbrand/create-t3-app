@@ -10,6 +10,7 @@ import {
   type SIWESession,
 } from "connectkit";
 
+
 function afterSiweSignin(session: SIWESession | undefined) {
   if (!session) return Error;
   try {

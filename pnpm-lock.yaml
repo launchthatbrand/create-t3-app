@@ -60,11 +60,11 @@ dependencies:
     specifier: ^2.1.0
     version: 2.1.0
   connectkit:
-    specifier: ^1.6.0
-    version: 1.7.1(@babel/core@7.23.9)(@tanstack/react-query@4.36.1)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.21.4)(wagmi@1.4.13)
+    specifier: 1.6.0
+    version: 1.6.0(@babel/core@7.23.9)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.21.4)(wagmi@1.4.13)(zod@3.22.4)
   connectkit-next-siwe:
-    specifier: ^0.2.0
-    version: 0.2.0(connectkit@1.7.1)(next@13.5.6)(react-dom@18.2.0)(react@18.2.0)(siwe@2.1.4)
+    specifier: 0.2.0
+    version: 0.2.0(connectkit@1.6.0)(next@13.5.6)(react-dom@18.2.0)(react@18.2.0)(siwe@2.1.4)
   drizzle-orm:
     specifier: ^0.28.5
     version: 0.28.6(@planetscale/database@1.14.0)(mysql2@3.7.1)
@@ -1210,6 +1210,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -3615,7 +3616,7 @@ packages:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
 
-  /connectkit-next-siwe@0.2.0(connectkit@1.7.1)(next@13.5.6)(react-dom@18.2.0)(react@18.2.0)(siwe@2.1.4):
+  /connectkit-next-siwe@0.2.0(connectkit@1.6.0)(next@13.5.6)(react-dom@18.2.0)(react@18.2.0)(siwe@2.1.4):
     resolution: {integrity: sha512-2Y4YGdBrQYX9jj5WFyCljdRBi0xt5FOFmPMnTYMzQneC1d4lJQqqQOkCBuxK527+YIhL2pSTkoqZETxB5PKUCA==}
     engines: {node: '>=12.4'}
     peerDependencies:
@@ -3625,7 +3626,7 @@ packages:
       react-dom: 17.x || 18.x
       siwe: '>=2'
     dependencies:
-      connectkit: 1.7.1(@babel/core@7.23.9)(@tanstack/react-query@4.36.1)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.21.4)(wagmi@1.4.13)
+      connectkit: 1.6.0(@babel/core@7.23.9)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.21.4)(wagmi@1.4.13)(zod@3.22.4)
       iron-session: 6.3.1(next@13.5.6)
       next: 13.5.6(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
@@ -3636,20 +3637,19 @@ packages:
       - koa
     dev: false
 
-  /connectkit@1.7.1(@babel/core@7.23.9)(@tanstack/react-query@4.36.1)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.21.4)(wagmi@1.4.13):
-    resolution: {integrity: sha512-4w4KQADXm6CdbJPH3Q9pUO0YNjXnCQ0+vUpzQvlxDYSpZg48jDmRxcXSg2jgRPlacn32ZMh1RTIuiUsy1iOJiw==}
+  /connectkit@1.6.0(@babel/core@7.23.9)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.21.4)(wagmi@1.4.13)(zod@3.22.4):
+    resolution: {integrity: sha512-uZBuSTHcxK1RW5Malrz0jkzWDWmmv121ht/KVfG5PXv/sWNt4S1V+s6RS5s2ESpASlTifLoyVKDMg6BdGkbn2w==}
     engines: {node: '>=12.4'}
     peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
       react: 17.x || 18.x
       react-dom: 17.x || 18.x
-      viem: 2.x
-      wagmi: 2.x
+      viem: ^1.0.0
+      wagmi: ^1.1.1
     dependencies:
-      '@tanstack/react-query': 4.36.1(react-dom@18.2.0)(react@18.2.0)
       buffer: 6.0.3
       detect-browser: 5.3.0
       framer-motion: 6.5.1(react-dom@18.2.0)(react@18.2.0)
+      mipd: 0.0.5(typescript@5.3.3)(zod@3.22.4)
       qrcode: 1.5.3
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -3661,7 +3661,11 @@ packages:
       wagmi: 1.4.13(@planetscale/database@1.14.0)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.21.4)(zod@3.22.4)
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - react-is
+      - typescript
+      - utf-8-validate
+      - zod
     dev: false
 
   /consola@3.2.3:
@@ -5691,6 +5695,22 @@ packages:
     resolution: {integrity: sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==}
     engines: {node: '>=16 || 14 >=14.17'}
 
+  /mipd@0.0.5(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-gbKA784D2WKb5H/GtqEv+Ofd1S9Zj+Z/PGDIl1u1QAbswkxD28BQ5bSXQxkeBzPBABg1iDSbiwGG1XqlOxRspA==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.3.3
+      viem: 1.21.4(typescript@5.3.3)(zod@3.22.4)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - zod
+    dev: false
+
   /mlly@1.5.0:
     resolution: {integrity: sha512-NPVQvAY1xr1QoVeG0cy8yUYC7FQcOx6evl/RjT1wL5FvzPnzOysoqB/jmx/DhssT2dYa8nxECLAaFI/+gVLhDQ==}
     dependencies:
@@ -5757,6 +5777,10 @@ packages:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
+    dev: false
 
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
