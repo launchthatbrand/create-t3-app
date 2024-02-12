@@ -40,8 +40,6 @@ export const POST = async (req: NextRequest) => {
 
     session.address = fields.address;
     session.chainId = fields.chainId;
-
-    // We are on server, create Firebase token and send to client
   } catch (error) {
     switch (error) {
       case SiweErrorType.INVALID_NONCE:

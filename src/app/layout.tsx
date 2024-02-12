@@ -28,14 +28,14 @@ export default function RootLayout({
       <body
         className={`font-sans ${inter.variable} flex min-h-screen flex-1 flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]`}
       >
-        <Web3Provider>
-          <TRPCReactProvider headers={headers()}>
+        <TRPCReactProvider headers={headers()}>
+          <Web3Provider>
             <Header />
             <main className="flex flex-1 items-center justify-center text-white">
               {children}
             </main>
-          </TRPCReactProvider>
-        </Web3Provider>
+          </Web3Provider>
+        </TRPCReactProvider>
         <Toaster />
       </body>
     </html>

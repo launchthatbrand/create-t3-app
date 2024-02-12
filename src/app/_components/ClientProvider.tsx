@@ -3,7 +3,7 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { SiweMessage } from "siwe";
 import { mainnet } from "wagmi/chains";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   ConnectKitProvider,
   type SIWEConfig,
@@ -86,19 +86,15 @@ const siweConfig = {
   signOut: () => fetch(`/siwe`, { method: "DELETE" }).then((res) => res.ok),
 } satisfies SIWEConfig;
 
-const queryClient = new QueryClient();
-
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <SIWEProvider
-          {...siweConfig}
-          onSignIn={(session?: SIWESession) => afterSiweSignin(session)}
-        >
-          <ConnectKitProvider>{children}</ConnectKitProvider>
-        </SIWEProvider>
-      </QueryClientProvider>
+      <SIWEProvider
+        {...siweConfig}
+        onSignIn={(session?: SIWESession) => afterSiweSignin(session)}
+      >
+        <ConnectKitProvider>{children}</ConnectKitProvider>
+      </SIWEProvider>
     </WagmiProvider>
   );
 };
