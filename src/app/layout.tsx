@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "./_components/ui/toaster";
 import { headers } from "next/headers";
+import { Web3Provider } from "./_components/ClientProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,12 +28,14 @@ export default function RootLayout({
       <body
         className={`font-sans ${inter.variable} flex min-h-screen flex-1 flex-col bg-gradient-to-b from-[#2e026d] to-[#15162c]`}
       >
-        <TRPCReactProvider headers={headers()}>
-          <Header />
-          <main className="flex flex-1 items-center justify-center text-white">
-            {children}
-          </main>
-        </TRPCReactProvider>
+        <Web3Provider>
+          <TRPCReactProvider headers={headers()}>
+            <Header />
+            <main className="flex flex-1 items-center justify-center text-white">
+              {children}
+            </main>
+          </TRPCReactProvider>
+        </Web3Provider>
         <Toaster />
       </body>
     </html>

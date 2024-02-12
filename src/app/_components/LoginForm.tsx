@@ -20,6 +20,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ConnectKitButton } from "connectkit";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -69,6 +70,7 @@ export default function LoginForm() {
 
   return (
     <div className="flex flex-col items-center">
+      <ConnectKitButton />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
