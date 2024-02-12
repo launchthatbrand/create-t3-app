@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -6,7 +8,6 @@
  * for Docker builds.
  */
 await import("./src/env.mjs");
-
 /** @type {import("next").NextConfig} */
 const config = {
   experimental: {
@@ -22,14 +23,16 @@ const config = {
       },
     ],
   },
-  webpack: (config, context) => {
-    if (config.plugins) {
-      config.plugins.push(
-        new context.webpack.IgnorePlugin({
-          resourceRegExp: /^(lokijs|pino-pretty|encoding)$/,
-        }),
-      );
-    }
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false, net: false, tls: false };
+    config.externals.push(
+      "pino-pretty",
+      "lokijs",
+      "encoding",
+      "pino-pretty",
+      "bufferutil",
+      "utf-8-validate",
+    );
     return config;
   },
 };
