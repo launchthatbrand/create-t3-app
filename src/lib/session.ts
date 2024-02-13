@@ -1,5 +1,5 @@
 import { COOKIE_NAME } from "./consts";
-import { sealData, unsealData } from "iron-session";
+import { sealData, unsealData } from "iron-session/edge";
 import { type NextRequest, type NextResponse } from "next/server";
 
 if (!process.env.SESSION_SECRET) {
