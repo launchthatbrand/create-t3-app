@@ -1,9 +1,9 @@
 import "~/styles/globals.css";
 
+import ClientProvider from "./_components/ClientProvider";
 import { Inter } from "next/font/google";
-import { headers } from "next/headers";
-
 import { TRPCReactProvider } from "~/trpc/react";
+import { headers } from "next/headers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,8 +23,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
-        <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
+      <body
+        className={`font-sans ${inter.variable} flex min-h-screen flex-1 items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white`}
+      >
+        <ClientProvider>
+          <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
+        </ClientProvider>
       </body>
     </html>
   );
