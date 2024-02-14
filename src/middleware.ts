@@ -7,7 +7,8 @@ import Session from "./lib/session";
 const PUBLIC_PATHS = ["/register", "/login", "/reset-password", "/siwe"];
 
 export const middleware = async (request: NextRequest) => {
-  console.log("middleware_activated");
+  const path = request.nextUrl.pathname;
+  console.log("middleware_activated", path);
   const session = await Session.fromRequest(request);
 
   const url = request.nextUrl.clone(); // Clone the request URL for potential modifications
@@ -35,5 +36,5 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
