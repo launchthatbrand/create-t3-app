@@ -10,6 +10,7 @@ import {
   getDefaultConfig,
 } from "connectkit";
 import { APP_NAME } from "~/lib/consts";
+import { useRouter } from "next/navigation";
 
 const config = createConfig(
   getDefaultConfig({
@@ -59,9 +60,10 @@ export default function ClientProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   return (
     <WagmiConfig config={config}>
-      <SIWEProvider {...siweConfig}>
+      <SIWEProvider {...siweConfig} onSignIn={() => router.push("/")}>
         <ConnectKitProvider>{children}</ConnectKitProvider>
       </SIWEProvider>
     </WagmiConfig>

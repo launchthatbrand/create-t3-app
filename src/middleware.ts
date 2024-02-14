@@ -9,7 +9,6 @@ const PUBLIC_PATHS = ["/register", "/login", "/reset-password", "/siwe"];
 export const middleware = async (request: NextRequest) => {
   console.log("middleware_activated");
   const session = await Session.fromRequest(request);
-  console.log("middleware_session", session);
 
   const url = request.nextUrl.clone(); // Clone the request URL for potential modifications
   const isPublicPath = PUBLIC_PATHS.includes(url.pathname);
