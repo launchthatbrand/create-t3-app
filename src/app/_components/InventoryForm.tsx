@@ -389,7 +389,7 @@ export default function InventoryForm() {
                 )}
               />
               <Button
-                className="bg-red-600 p-3 text-white"
+                className="bg-red-700 p-3 text-white"
                 onClick={() => remove(index)}
               >
                 <CiSquareMinus className="h-7 w-7 !text-white" />
