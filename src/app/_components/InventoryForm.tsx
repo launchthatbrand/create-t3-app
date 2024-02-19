@@ -52,6 +52,7 @@ import {
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
+import { CiSquareMinus } from "react-icons/ci";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -298,7 +299,7 @@ export default function InventoryForm() {
           />
           <div className="flex justify-between p-1">
             <span>Items</span>
-            <span>Quantity</span>
+            <span className="pr-16">Quantity</span>
           </div>
           {itemFields.map((field, index) => (
             <div key={index} className="flex space-x-3">
@@ -324,7 +325,7 @@ export default function InventoryForm() {
                           variant="outline"
                           role="combobox"
                           aria-expanded={value.open || false}
-                          className="w-[70%] justify-between"
+                          className="w-[70%] justify-between overflow-hidden text-ellipsis whitespace-nowrap text-left"
                         >
                           {value.name || "Select items..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -387,6 +388,12 @@ export default function InventoryForm() {
                   />
                 )}
               />
+              <Button
+                className="bg-red-600 p-3 text-white"
+                onClick={() => remove(index)}
+              >
+                <CiSquareMinus className="h-7 w-7 !text-white" />
+              </Button>
             </div>
           ))}
           <Button
