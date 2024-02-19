@@ -1,7 +1,7 @@
 import InventoryForm from "~/app/_components/InventoryFormTest";
 import React from "react";
-import { columns, type Payment } from "./orders/columns";
-import { DataTable } from "./orders/data-table";
+import { columns, type Payment } from "./order/columns";
+import { DataTable } from "./order/data-table";
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function getData(): Promise<Payment[]> {

@@ -1,7 +1,11 @@
+"use client";
 import React from "react";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 function Logo() {
-  return <div className="rounded-md bg-white p-2 px-4">Logo</div>;
+  const router = useRouter();
+  return <Button onClick={() => router.push("/")}>Logo</Button>;
 }
 
 export default Logo;
