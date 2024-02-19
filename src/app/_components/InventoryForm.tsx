@@ -24,7 +24,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState } from "react";
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
@@ -33,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { signInWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const locations = [
@@ -117,7 +117,10 @@ export default function InventoryForm() {
   return (
     <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-80 space-y-6">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-6 md:w-80"
+        >
           <FormField
             control={form.control}
             name="email"

@@ -26,12 +26,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { SetStateAction, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SetStateAction, useEffect, useState } from "react";
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { fetchLocations } from "../monday/actions";
 import { signInWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,22 +75,23 @@ const items = [
   },
 ];
 
-const locations = [
-  {
-    value: "location_1",
-    label: "Location 1",
-  },
-  {
-    value: "location_2",
-    label: "Location 2",
-  },
-  {
-    value: "location_3",
-    label: "Location 3",
-  },
-];
+// const locations = [
+//   {
+//     value: "location_1",
+//     label: "Location 1",
+//   },
+//   {
+//     value: "location_2",
+//     label: "Location 2",
+//   },
+//   {
+//     value: "location_3",
+//     label: "Location 3",
+//   },
+// ];
 
 export default function InventoryForm() {
+  const [locations, setLocations] = useState();
   const [locationOpen, setLocationOpen] = useState(false);
   const [value, setValue] = useState("");
   const form = useForm<FormValues>({
@@ -109,8 +120,25 @@ export default function InventoryForm() {
     });
   }
 
+  useEffect(() => {
+    // Call fetchData only if the user is authenticated
+    const loadData = async () => {
+      try {
+        const fetchedLocations = await fetchLocations();
+        setLocations(fetchedLocations?.data.boards[0].items);
+        console.log("locations1", fetchedLocations?.data.boards[0].items);
+        console.log("locations2", locations);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        // Handle error or set data to null/empty state
+      }
+    };
+
+    void loadData();
+  }, []);
+
   return (
-    <div className="w-2/5 flex-1 rounded-md border p-5 shadow-md">
+    <div className="w-full flex-1 rounded-md border p-5 shadow-md md:w-3/5">
       <p className="text-center font-medium">Inventory Form</p>
       <Form {...form}>
         <form
@@ -124,53 +152,22 @@ export default function InventoryForm() {
               <FormItem>
                 <FormLabel>Location</FormLabel>
                 <FormControl className="w-full">
-                  <Popover open={locationOpen} onOpenChange={setLocationOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={locationOpen}
-                        className="w-full justify-between"
-                      >
-                        {value
-                          ? locations.find(
-                              (location) => location.value === value,
-                            )?.label
-                          : "Select pickup location..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search framework..." />
-                        <CommandEmpty>No framework found.</CommandEmpty>
-                        <CommandGroup>
-                          {locations.map((location) => (
-                            <CommandItem
-                              key={location.value}
-                              value={location.value}
-                              onSelect={(currentValue) => {
-                                setValue(
-                                  currentValue === value ? "" : currentValue,
-                                );
-                                setLocationOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  value === location.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                              {location.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Locations</SelectLabel>
+                        {locations?.map((item, index) => (
+                          // Render each item. Ensure you have a unique key for each child.
+                          <SelectItem key={index} value={item.name}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
 
                 <FormMessage />

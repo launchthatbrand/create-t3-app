@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "~/app/_components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 import { MoreHorizontal } from "lucide-react";
 
 // This type is used to define the shape of our data.
@@ -37,7 +38,7 @@ export const columns: ColumnDef<Payment>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const order = row.original;
       return (
         <div className="flex justify-end">
           <DropdownMenu>
@@ -50,12 +51,12 @@ export const columns: ColumnDef<Payment>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem className="bg-slate-50">
-                Check In Order
+                <Link href="/order/1234">Check In Order</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() =>
-                  navigator.clipboard.writeText(payment.id?.toString() ?? "")
+                  navigator.clipboard.writeText(order.id?.toString() ?? "")
                 }
               >
                 Copy Order ID

@@ -31,7 +31,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full space-y-5 rounded-md border p-5 shadow-md">
+    <div className="w-full space-y-5 rounded-md border p-5 shadow-md md:w-3/5">
       <div className="text-center font-medium">Past Pickup Orders</div>
       <Table className="rounded-md border">
         <TableHeader>

@@ -81,12 +81,12 @@ const locations = [
 ];
 
 export default function CheckinForm() {
-  const [locationOpen, setLocationOpen] = useState(false);
+  const [locationOpen, setLocationOpen] = useState("location_1");
   const [value, setValue] = useState("");
   const form = useForm<FormValues>({
     defaultValues: {
       items: [],
-      location: "",
+      location: "location_1",
     },
   });
 
@@ -110,7 +110,7 @@ export default function CheckinForm() {
   }
 
   return (
-    <div className="w-2/5 flex-1 rounded-md border p-5 shadow-md">
+    <div className="w-full flex-1 rounded-md border p-5 shadow-md md:w-3/5">
       <p className="text-center font-medium">Checkin Order</p>
       <Form {...form}>
         <form
@@ -130,21 +130,17 @@ export default function CheckinForm() {
                         variant="outline"
                         role="combobox"
                         aria-expanded={locationOpen}
-                        disabled
+                        // disabled
                         className="w-full justify-between"
                       >
-                        {value
-                          ? locations.find(
-                              (location) => location.value === value,
-                            )?.label
-                          : "Select pickup location..."}
+                        {value}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                       <Command>
                         <CommandInput
-                          disabled
+                          // disabled
                           placeholder="Search framework..."
                         />
                         <CommandEmpty>No framework found.</CommandEmpty>

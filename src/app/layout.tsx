@@ -31,7 +31,7 @@ export default function RootLayout({
         <ClientProvider>
           <TRPCReactProvider headers={headers()}>
             <Header />
-            <div className="flex min-h-screen flex-1 flex-col items-center justify-center">
+            <div className="flex flex-1 flex-col items-center justify-center py-10">
               {children}
             </div>
           </TRPCReactProvider>
