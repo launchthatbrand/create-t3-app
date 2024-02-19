@@ -181,7 +181,7 @@ export default function InventoryForm() {
   }, []);
 
   return (
-    <div className="w-full flex-1 rounded-md border p-3 shadow-md md:w-3/5">
+    <div className="w-full flex-1 rounded-md border p-3 shadow-md md:w-3/5 md:p-5">
       <p className="text-center font-medium">Inventory Form</p>
       <Form {...form}>
         <form

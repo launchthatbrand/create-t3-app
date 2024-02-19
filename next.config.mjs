@@ -7,7 +7,7 @@ await import("./src/env.mjs");
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
-    domains: ["static.thenounproject.com"],
+    domains: ["static.thenounproject.com", "fdotwww.blob.core.windows.net"],
   },
   experimental: {
     serverActions: true,
