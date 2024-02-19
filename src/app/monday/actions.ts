@@ -55,11 +55,15 @@ export async function fetchItems() {
   }
 }
 
-export async function createItem() {
+export async function createItem(data) {
+  console.log("createItem_data", data);
+  const item_name =
+    data.type === "checkout" ? "Check-out Order" : "Check-in Order";
+  const groupId = data.type === "checkout" ? "topics" : "group_title";
   try {
     // const mutation =
     //   'mutation { create_item (board_id: 5980720965, group_id: "topics", item_name: "Checkout Order") { id } }';
-    const mutation = `mutation { create_item (board_id: 5980720965, item_name: \"Checkout Order\", column_values: \"{ \\\"text0\\\": \\\"Pickup Location 1\\\",\\\"text1\\\": \\\"Event 1\\\", \\\"text\\\": \\\"Volunteer 1\\\" }\") { id board { id } } }`;
+    const mutation = `mutation { create_item (board_id: 5980720965, group_id: \"${groupId}\", item_name: \"${item_name}\", column_values: \"{ \\\"text0\\\": \\\"Pickup Location 1\\\",\\\"text1\\\": \\\"Event 1\\\", \\\"text\\\": \\\"Volunteer 1\\\" }\") { id board { id } } }`;
     const result = await monday.api(mutation, options);
     console.log("createItem", result);
     return result;
@@ -118,7 +122,7 @@ export async function fetchVolunteers() {
 export async function createCheckoutOrder(data: unknown) {
   try {
     console.log("createCheckoutOrder", data);
-    const newItemId = await createItem();
+    const newItemId = await createItem(data);
     console.log("result1", newItemId?.data.create_item.id);
     const result2 = await Promise.all(
       data.items.map(async (item) => {
