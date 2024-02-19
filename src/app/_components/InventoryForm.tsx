@@ -50,13 +50,13 @@ import {
   fetchVolunteers,
 } from "../monday/actions";
 
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { CiSquareMinus } from "react-icons/ci";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { ScrollArea } from "./ui/scroll-area";
+import { TbTrashX } from "react-icons/tb";
 import { cn } from "@/lib/utils";
 import { signInWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
@@ -122,8 +122,11 @@ export default function InventoryForm() {
   const [value, setValue] = useState("");
   const form = useForm<FormValues>({
     defaultValues: {
+      type: "",
+      volunteer: "",
+      location: "",
+      event: "",
       items: [],
-      location: "5987200311",
     },
   });
 
@@ -138,6 +141,7 @@ export default function InventoryForm() {
 
   function onSubmit(data: unknown) {
     console.log("form submitted", data);
+    form.reset({});
     const result = createCheckoutOrder(data);
 
     toast({
@@ -149,8 +153,7 @@ export default function InventoryForm() {
         </pre>
       ),
     });
-    form.reset();
-    router.refresh();
+    router.replace("/");
   }
 
   useEffect(() => {
@@ -178,7 +181,7 @@ export default function InventoryForm() {
   }, []);
 
   return (
-    <div className="w-full flex-1 rounded-md border p-5 shadow-md md:w-3/5">
+    <div className="w-full flex-1 rounded-md border p-3 shadow-md md:w-3/5">
       <p className="text-center font-medium">Inventory Form</p>
       <Form {...form}>
         <form
@@ -198,7 +201,7 @@ export default function InventoryForm() {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Check-in or Check-out" />
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -223,7 +226,7 @@ export default function InventoryForm() {
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select your name" />
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -252,7 +255,7 @@ export default function InventoryForm() {
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a location" />
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -281,7 +284,7 @@ export default function InventoryForm() {
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select an event" />
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -299,7 +302,7 @@ export default function InventoryForm() {
           />
           <div className="flex justify-between p-1">
             <span>Items</span>
-            <span className="pr-16">Quantity</span>
+            <span className="pr-12">Quantity</span>
           </div>
           {itemFields.map((field, index) => (
             <div key={index} className="flex space-x-3">
@@ -325,7 +328,7 @@ export default function InventoryForm() {
                           variant="outline"
                           role="combobox"
                           aria-expanded={value.open || false}
-                          className="w-[70%] justify-between overflow-hidden text-ellipsis whitespace-nowrap text-left"
+                          className="w-[80%] justify-between overflow-hidden text-ellipsis whitespace-nowrap text-left"
                         >
                           {value.name || "Select items..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -384,15 +387,15 @@ export default function InventoryForm() {
                     type="number"
                     min="1" // Ensure quantity is at least 1
                     placeholder="Quantity"
-                    className="w-[30%]" // Adjust width as necessary
+                    className="w-[20%]" // Adjust width as necessary
                   />
                 )}
               />
               <Button
-                className="bg-red-700 p-3 text-white"
+                className="bg-red-700 p-1 text-white"
                 onClick={() => remove(index)}
               >
-                <CiSquareMinus className="h-7 w-7 !text-white" />
+                <TbTrashX className="h-7 w-7 !text-white" />
               </Button>
             </div>
           ))}
