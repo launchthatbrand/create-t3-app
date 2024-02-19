@@ -36,19 +36,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SetStateAction, useEffect, useState } from "react";
+import { fetchItems, fetchLocations } from "../monday/actions";
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { fetchLocations } from "../monday/actions";
 import { signInWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Location {
-  value: string;
-  label: string;
+  id: string;
+  name: string;
   open: boolean;
 }
 
@@ -62,16 +63,16 @@ interface FormValues {
 
 const items = [
   {
-    value: "item_1",
-    label: "Item 1",
+    id: "123456",
+    name: "Item 1",
   },
   {
-    value: "item_2",
-    label: "Item 2",
+    id: "234567",
+    name: "Item 2",
   },
   {
-    value: "item_3",
-    label: "Item 3",
+    id: "345678",
+    name: "Item 3",
   },
 ];
 
@@ -92,16 +93,21 @@ const items = [
 
 export default function InventoryForm() {
   const [locations, setLocations] = useState();
+  // const [items, setItems] = useState();
   const [locationOpen, setLocationOpen] = useState(false);
   const [value, setValue] = useState("");
   const form = useForm<FormValues>({
     defaultValues: {
       items: [],
-      location: "",
+      location: "5987200311",
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: itemFields,
+    append,
+    remove,
+  } = useFieldArray({
     control: form.control,
     name: "items", // The key of the field array
   });
@@ -125,9 +131,11 @@ export default function InventoryForm() {
     const loadData = async () => {
       try {
         const fetchedLocations = await fetchLocations();
-        setLocations(fetchedLocations?.data.boards[0].items);
-        console.log("locations1", fetchedLocations?.data.boards[0].items);
-        console.log("locations2", locations);
+        const fetchedItems = await fetchItems();
+        console.log("locations", fetchedLocations);
+        console.log("items", fetchedItems);
+        setLocations(fetchedLocations?.data.boards[0].items_page.items);
+        // setItems(fetchedItems?.data.boards[0].items_page.items);
       } catch (error) {
         console.error("Failed to fetch data:", error);
         // Handle error or set data to null/empty state
@@ -150,26 +158,25 @@ export default function InventoryForm() {
             name="location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl className="w-full">
-                  <Select>
+                <FormLabel>Email</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select a location" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Locations</SelectLabel>
-                        {locations?.map((item, index) => (
-                          // Render each item. Ensure you have a unique key for each child.
-                          <SelectItem key={index} value={item.name}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-
+                  </FormControl>
+                  <SelectContent>
+                    {locations?.map((item, index) => (
+                      //             // Render each item. Ensure you have a unique key for each child.
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -178,7 +185,7 @@ export default function InventoryForm() {
             <span>Items</span>
             <span>Quantity</span>
           </div>
-          {fields.map((field, index) => (
+          {itemFields.map((field, index) => (
             <div key={index} className="flex space-x-3">
               <Controller
                 key={field.id}
@@ -203,7 +210,7 @@ export default function InventoryForm() {
                           aria-expanded={value.open || false}
                           className="w-[70%] justify-between"
                         >
-                          {value.label || "Select items..."}
+                          {value.name || "Select items..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -214,13 +221,13 @@ export default function InventoryForm() {
                           <CommandGroup>
                             {items.map((item) => (
                               <CommandItem
-                                key={item.value}
-                                value={item.value}
+                                key={item.id}
+                                value={item.id}
                                 onSelect={() => {
                                   onChange({
                                     ...value,
-                                    label: item.label,
-                                    value: item.value,
+                                    name: item.name,
+                                    id: item.id,
                                     open: false,
                                   });
                                 }}
@@ -228,12 +235,12 @@ export default function InventoryForm() {
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    value.value === item.value
+                                    value.id === item.id
                                       ? "opacity-100"
                                       : "opacity-0",
                                   )}
                                 />
-                                {item.label}
+                                {item.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -264,7 +271,7 @@ export default function InventoryForm() {
             onClick={() =>
               append({
                 location: { value: "", label: "", open: false },
-                quantity: 0,
+                quantity: 1,
               })
             }
           >

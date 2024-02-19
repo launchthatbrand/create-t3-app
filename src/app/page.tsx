@@ -1,4 +1,4 @@
-import InventoryForm from "~/app/_components/InventoryFormTest";
+import InventoryForm from "~/app/_components/InventoryForm";
 import React from "react";
 import { columns, type Payment } from "./order/columns";
 import { DataTable } from "./order/data-table";
@@ -21,7 +21,7 @@ async function InventoryFormPage() {
   return (
     <div className="container flex flex-col items-center space-y-10">
       <InventoryForm />
-      <DataTable columns={columns} data={data} />
+      {/* <DataTable columns={columns} data={data} /> */}
     </div>
   );
 }

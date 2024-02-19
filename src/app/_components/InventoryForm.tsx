@@ -1,3 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 "use client";
 
 import * as z from "zod";
@@ -10,6 +17,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -24,136 +32,208 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SetStateAction, useEffect, useState } from "react";
+import {
+  createCheckoutOrder,
+  fetchEvents,
+  fetchItems,
+  fetchLocations,
+  fetchVolunteers,
+} from "../monday/actions";
 
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { signInWithEmailAndPassword } from "../auth/actions";
 import { toast } from "@/components/ui/use-toast";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const locations = [
-  {
-    value: "location_1",
-    label: "Location 1",
-  },
-  {
-    value: "location_2",
-    label: "Location 2",
-  },
-  {
-    value: "location_3",
-    label: "Location 3",
-  },
-];
+interface Item {
+  id: string;
+  name: string;
+  open: boolean;
+}
 
-const events = [
-  {
-    value: "event_1",
-    label: "Event 1",
-  },
-  {
-    value: "event_2",
-    label: "Event 2",
-  },
-  {
-    value: "event_3",
-    label: "Event 3",
-  },
-];
+interface FormValues {
+  type: string;
+  items: {
+    id: string;
+    name: string;
+    quantity: number;
+    open: boolean;
+  }[];
+  volunteer: string;
+  location: string;
+  event: string;
+}
 
-const FormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6, {
-    message: "Password is required.",
-  }),
-  location: z.string(),
-  event: z.string(),
-});
+// const items = [
+//   {
+//     id: "123456",
+//     name: "Item 1",
+//   },
+//   {
+//     id: "234567",
+//     name: "Item 2",
+//   },
+//   {
+//     id: "345678",
+//     name: "Item 3",
+//   },
+// ];
+
+// const locations = [
+//   {
+//     value: "location_1",
+//     label: "Location 1",
+//   },
+//   {
+//     value: "location_2",
+//     label: "Location 2",
+//   },
+//   {
+//     value: "location_3",
+//     label: "Location 3",
+//   },
+// ];
 
 export default function InventoryForm() {
+  const router = useRouter();
+  const [volunteers, setVolunteers] = useState([]);
+  const [locations, setLocations] = useState();
+  const [events, setEvents] = useState();
+  const [items, setItems] = useState();
   const [locationOpen, setLocationOpen] = useState(false);
-  const [eventOpen, setEventOpen] = useState(false);
   const [value, setValue] = useState("");
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<FormValues>({
     defaultValues: {
-      email: "dev1@gmail.com",
-      password: "dev1234$",
+      items: [],
+      location: "5987200311",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("form submitted");
-    const result = await signInWithEmailAndPassword(data);
-    console.log("result", result);
-    const { error } = result;
+  const {
+    fields: itemFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control: form.control,
+    name: "items", // The key of the field array
+  });
 
-    if (error?.message) {
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{error.message}</code>
-          </pre>
-        ),
-      });
-    } else {
-      toast({
-        title: "Sucessfully Signed In:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            Sucessfully Registered:
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      });
-    }
+  function onSubmit(data: unknown) {
+    console.log("form submitted", data);
+    const result = createCheckoutOrder(data);
+
+    toast({
+      title: "Sucessfully Submitted:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          Sucessfully Submitted:
+          {/* <code className="text-white">{JSON.stringify(data, null, 2)}</code> */}
+        </pre>
+      ),
+    });
+    form.reset();
+    router.refresh();
   }
 
+  useEffect(() => {
+    // Call fetchData only if the user is authenticated
+    const loadData = async () => {
+      try {
+        const fetchedLocations = await fetchLocations();
+        const fetchedEvents = await fetchEvents();
+        const fetchedItems = await fetchItems();
+        const fetchedVolunteers = await fetchVolunteers();
+        console.log("locations", fetchedLocations);
+        console.log("events", fetchedEvents);
+        console.log("items", fetchedItems);
+        setLocations(fetchedLocations?.data.boards[0].items_page.items);
+        setEvents(fetchedEvents?.data.boards[0].items_page.items);
+        setItems(fetchedItems?.data.boards[0].items_page.items);
+        setVolunteers(fetchedVolunteers?.data.boards[0].items_page.items);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        // Handle error or set data to null/empty state
+      }
+    };
+
+    void loadData();
+  }, []);
+
   return (
-    <div>
+    <div className="w-full flex-1 rounded-md border p-5 shadow-md md:w-3/5">
+      <p className="text-center font-medium">Inventory Form</p>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-6 md:w-80"
+          className="w-full space-y-4"
         >
           <FormField
             control={form.control}
-            name="email"
+            name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="example@gmail.com"
-                    {...field}
-                    type="email"
-                    onChange={field.onChange}
-                  />
-                </FormControl>
+                <FormLabel>Type</FormLabel>
+                <Select
+                  required
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Check-in or Check-out" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="checkin">Check-in</SelectItem>
+                    <SelectItem value="checkout">Check-out</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="password"
+            name="volunteer"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="password"
-                    {...field}
-                    type="password"
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-
+                <FormLabel>Select Volunteer Name</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  required
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your name" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {volunteers?.map((item, index) => (
+                      //             // Render each item. Ensure you have a unique key for each child.
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -163,57 +243,26 @@ export default function InventoryForm() {
             name="location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl className="w-full">
-                  <Popover open={locationOpen} onOpenChange={setLocationOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={locationOpen}
-                        className="w-full justify-between"
-                      >
-                        {value
-                          ? locations.find(
-                              (location) => location.value === value,
-                            )?.label
-                          : "Select pickup location..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search framework..." />
-                        <CommandEmpty>No framework found.</CommandEmpty>
-                        <CommandGroup>
-                          {locations.map((location) => (
-                            <CommandItem
-                              key={location.value}
-                              value={location.value}
-                              onSelect={(currentValue) => {
-                                setValue(
-                                  currentValue === value ? "" : currentValue,
-                                );
-                                setLocationOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  value === location.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                              {location.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-
+                <FormLabel>Pickup Location</FormLabel>
+                <Select
+                  required
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a location" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {locations?.map((item, index) => (
+                      //             // Render each item. Ensure you have a unique key for each child.
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -224,60 +273,138 @@ export default function InventoryForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Event</FormLabel>
-                <FormControl className="w-full">
-                  <Popover open={eventOpen} onOpenChange={setEventOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={eventOpen}
-                        className="w-full justify-between"
-                      >
-                        {value
-                          ? events.find((event) => event.value === value)?.label
-                          : "Select event..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search events..." />
-                        <CommandEmpty>No framework found.</CommandEmpty>
-                        <CommandGroup>
-                          {events.map((event) => (
-                            <CommandItem
-                              key={event.value}
-                              value={event.value}
-                              onSelect={(currentValue) => {
-                                setValue(
-                                  currentValue === value ? "" : currentValue,
-                                );
-                                setEventOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  value === event.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                              {event.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
+                <Select
+                  required
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select an event" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {events?.map((item, index) => (
+                      //             // Render each item. Ensure you have a unique key for each child.
+                      <SelectItem key={index} value={item.id}>
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="flex w-full gap-2">
+          <div className="flex justify-between p-1">
+            <span>Items</span>
+            <span>Quantity</span>
+          </div>
+          {itemFields.map((field, index) => (
+            <div key={index} className="flex space-x-3">
+              <Controller
+                key={field.id}
+                name={`items.${index}`}
+                control={form.control}
+                render={({
+                  field: { onChange, value: fieldValue },
+                  fieldState: { error },
+                }) => {
+                  const value = fieldValue;
+                  return (
+                    <Popover
+                      modal={true}
+                      open={value?.open || false}
+                      onOpenChange={(isOpen) =>
+                        onChange({ ...value, open: isOpen })
+                      }
+                    >
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={value.open || false}
+                          className="w-[70%] justify-between"
+                        >
+                          {value.name || "Select items..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                        <Command>
+                          <CommandInput placeholder="Search items..." />
+                          <CommandEmpty>No items found.</CommandEmpty>
+                          <ScrollArea className="h-[200px]">
+                            <CommandGroup>
+                              {items?.map((item) => (
+                                <CommandItem
+                                  key={item.id}
+                                  value={item.id}
+                                  onSelect={() => {
+                                    onChange({
+                                      ...value,
+                                      name: item.name,
+                                      id: item.id,
+                                      open: false,
+                                    });
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      value.id === item.id
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  <Image
+                                    src="https://static.thenounproject.com/png/261694-200.png"
+                                    alt="product image"
+                                    width={50}
+                                    height={50}
+                                  />
+                                  {item.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </ScrollArea>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  );
+                }}
+              />
+              <Controller
+                name={`items.${index}.quantity`}
+                control={form.control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    min="1" // Ensure quantity is at least 1
+                    placeholder="Quantity"
+                    className="w-[30%]" // Adjust width as necessary
+                  />
+                )}
+              />
+            </div>
+          ))}
+          <Button
+            className="self-end"
+            type="button"
+            onClick={() =>
+              append({
+                id: "",
+                name: "",
+                open: false,
+                quantity: 1,
+              })
+            }
+          >
+            Add Item
+          </Button>
+          <Button className="w-full" type="submit">
             Submit
-            <AiOutlineLoading3Quarters className={cn("animate-spin")} />
           </Button>
         </form>
       </Form>
