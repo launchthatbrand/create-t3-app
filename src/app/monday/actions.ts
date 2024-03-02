@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -9,6 +10,7 @@
 
 import { type APIOptions } from "monday-sdk-js/types/client-api.interface";
 import mondaySdk from "monday-sdk-js";
+import { unstable_noStore as noStore } from "next/cache";
 
 const monday = mondaySdk();
 monday.setApiVersion("2023-10");
@@ -43,10 +45,39 @@ export async function fetchAllWorkspaces() {
   }
 }
 
+// Define the type for a single category
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export async function fetchCategories() {
+  try {
+    const query = "query { boards (ids: 5798486455) { groups { title id }} }";
+    const result = await monday.api(query, options);
+    // console.log("fetchCategories", result);
+    return result;
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
 export async function fetchItems() {
   try {
     const query =
-      "{ boards (ids: 5980735158) { items_page (limit: 500) { items { id name assets { id public_url }} } } }";
+      '{ boards (ids: 5798486455) { items_page (limit: 500 , query_params: {order_by:[{column_id:"name"}]}) { items { id name group { title id } assets { id public_url }} } } }';
+    const result = await monday.api(query, options);
+    // console.log("fetchItems", result);
+    return result;
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
+export async function fetchItemsByCategory() {
+  try {
+    const query =
+      '{ boards (ids: 5980735158) { groups ( group_id: "topics" ) { items_page (limit: 500) { items { id name assets { id public_url }} } } } }';
     const result = await monday.api(query, options);
     console.log("fetchItems", result);
     return result;
@@ -86,27 +117,55 @@ export async function createSubitem(data: unknown, newItemId: string) {
   }
 }
 
-export async function fetchLocations() {
+export async function fetchEvents() {
   try {
     const query =
-      "{ boards (ids: 5987199810) { items_page (limit: 500) { items { id name } } } }";
-    const result = await monday.api(query, options);
-    return result;
+      'query { items_page_by_column_values ( limit:50 , board_id: 5385787000 , columns: [{ column_id: "dropdown4", column_values: ["Yes"] }]) {items {id name group {id title} column_values(ids: "text7") { ... on DateValue { time date} }} }}';
+    const result1 = await monday.api(query, options);
+    // console.log("result1", result1);
+    const result2 = result1.data.items_page_by_column_values.items;
+    const result3 = result2[0];
+    console.log("result3", result3);
+
+    const groupedData = result2.reduce((acc, item) => {
+      // Use the group id as the key for each group
+      const { id, title } = item.group;
+
+      // If the group hasn't been added to the accumulator, add it
+      if (!acc[id]) {
+        acc[id] = {
+          groupId: id,
+          title,
+          items: [],
+        };
+      }
+
+      // Add the current item to the group's items array
+      acc[id].items.push({
+        id: item.id,
+        name: item.name,
+        column_values: item.column_values,
+      });
+
+      return acc;
+    }, {});
+
+    return groupedData;
   } catch (error) {
     console.log("error", error);
   }
 }
 
-export async function fetchEvents() {
-  try {
-    const query =
-      "{ boards (ids: 6080281301) { items_page (limit: 500) { items { id name } } } }";
-    const result = await monday.api(query, options);
-    return result;
-  } catch (error) {
-    console.log("error", error);
-  }
-}
+// export async function fetchEvents() {
+//   try {
+//     const query =
+//       "{ boards (ids: 6080281301) { items_page (limit: 500) { items { id name } } } }";
+//     const result = await monday.api(query, options);
+//     return result;
+//   } catch (error) {
+//     console.log("error", error);
+//   }
+// }
 
 export async function fetchVolunteers() {
   try {
