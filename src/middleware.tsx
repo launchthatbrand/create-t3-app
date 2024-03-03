@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import Session from "./lib/session";
 
 const PUBLIC_PATHS = ["/register", "/login", "/reset-password", "/siwe"];
 
 export async function middleware(request: NextRequest) {
+  const session = await Session.fromRequest(request);
+  console.log("middleware_ironSession", session);
   console.log("middleware_activated");
   let response = NextResponse.next({
     request: {
