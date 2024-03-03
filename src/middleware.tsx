@@ -6,8 +6,8 @@ import Session from "./lib/session";
 const PUBLIC_PATHS = ["/register", "/login", "/reset-password", "/siwe"];
 
 export async function middleware(request: NextRequest) {
-  // const session = await Session.fromRequest(request);
-  // console.log("middleware_ironSession", session);
+  const session = await Session.fromRequest(request);
+  console.log("middleware_ironSession", session);
   console.log("middleware_activated");
   let response = NextResponse.next({
     request: {
@@ -68,7 +68,7 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone(); // Clone the request URL for potential modifications
   const isPublicPath = PUBLIC_PATHS.includes(url.pathname);
 
-  if (user) {
+  if (user ?? session.address) {
     // User is authenticated
     console.log("Authenticated", user?.email ?? "NO EMAIL FOUND");
     if (isPublicPath) {
