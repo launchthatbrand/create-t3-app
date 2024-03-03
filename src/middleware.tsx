@@ -68,9 +68,9 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone(); // Clone the request URL for potential modifications
   const isPublicPath = PUBLIC_PATHS.includes(url.pathname);
 
-  if (user) {
+  if (user ?? session.address) {
     // User is authenticated
-    console.log("Authenticated", user.email);
+    console.log("Authenticated", user?.email ?? "NO EMAIL FOUND");
     if (isPublicPath) {
       // Redirect authenticated users away from public paths to the home page
       url.pathname = "/";
