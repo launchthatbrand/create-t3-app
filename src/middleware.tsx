@@ -3,7 +3,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import Session from "./lib/session";
 
-const PUBLIC_PATHS = ["/register", "/login", "/reset-password", "/siwe"];
+const PUBLIC_PATHS = ["/register", "/login", "/reset-password"];
 
 export async function middleware(request: NextRequest) {
   const session = await Session.fromRequest(request);
@@ -90,5 +90,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|siwe).*)"],
 };

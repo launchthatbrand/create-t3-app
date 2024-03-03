@@ -9,11 +9,17 @@ import {
   getDefaultConfig,
   type SIWESession,
 } from "connectkit";
+import { useRouter } from "next/navigation";
+import { type AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-function afterSiweSignin(session: SIWESession | undefined) {
+function AfterSiweSignin(
+  session: SIWESession | undefined,
+  router: AppRouterInstance,
+) {
   if (!session) return Error;
   try {
     console.log("afterSiweSigninStart", session);
+    router.push("/");
   } catch (error) {
     console.log("afterSiweSigninError", error);
   }
@@ -75,11 +81,12 @@ export default function ClientProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   return (
     <WagmiConfig config={wagmiConfig}>
       <SIWEProvider
         {...siweConfig}
-        onSignIn={(session?: SIWESession) => afterSiweSignin(session)}
+        onSignIn={(session?: SIWESession) => AfterSiweSignin(session, router)}
       >
         <ConnectKitProvider>{children}</ConnectKitProvider>
       </SIWEProvider>
