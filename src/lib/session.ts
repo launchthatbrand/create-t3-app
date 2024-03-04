@@ -1,5 +1,6 @@
 import { COOKIE_NAME } from "./consts";
-import { sealData, unsealData } from "iron-session";
+import { getIronSession, sealData, unsealData } from "iron-session";
+import { cookies } from "next/headers";
 import { type NextRequest, type NextResponse } from "next/server";
 
 if (!process.env.SESSION_SECRET) {
@@ -13,6 +14,7 @@ if (!process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID) {
 const SESSION_OPTIONS = {
   ttl: 60 * 60 * 24 * 30, // 30 days
   password: process.env.SESSION_SECRET,
+  cookieName: COOKIE_NAME,
 };
 
 export type ISession = {
@@ -30,6 +32,12 @@ class Session {
     this.nonce = session?.nonce;
     this.chainId = session?.chainId;
     this.address = session?.address;
+  }
+
+  static async getSession() {
+    const session = await getIronSession<ISession>(cookies(), SESSION_OPTIONS);
+
+    return session;
   }
 
   static async fromRequest(req: NextRequest): Promise<Session> {

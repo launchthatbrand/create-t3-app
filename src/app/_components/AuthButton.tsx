@@ -2,6 +2,7 @@ import { readUserSession, signOut } from "../(auth)/actions";
 
 import { Button } from "./ui/button";
 import React from "react";
+import Session from "~/lib/session";
 import { redirect } from "next/navigation";
 import { toast } from "./ui/use-toast";
 
@@ -27,13 +28,15 @@ async function handleSignout() {
 }
 
 async function AuthButton() {
+  const ironSession = await Session.getSession();
+  console.log("ironSession", ironSession);
   const {
     data: { session },
   } = await readUserSession();
-  if (!session)
+  if (!session && !ironSession.address)
     return (
       <form>
-        <Button variant={"outline"}>Sign In</Button>
+        <Button variant={"outline"}>Sign Ins</Button>
       </form>
     );
   return (
