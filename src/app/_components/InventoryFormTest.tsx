@@ -90,7 +90,10 @@ interface FormValues {
     name: string;
     quantity: number;
   }[];
-  volunteer: string;
+  volunteer: {
+    name: string;
+    email: string;
+  };
   location: {
     id: string;
     name: string;
@@ -105,16 +108,50 @@ export interface InventoryFormProps {
   categories: Category[];
   items: unknown;
   events: unknown;
+  locations: unknown;
 }
+
+const FormSchema = z.object({
+  type: z.string({
+    required_error: "Please select a form type.",
+  }),
+  volunteer: z.object({
+    name: z.string({
+      required_error: "Please enter your name.",
+    }),
+    email: z.string({
+      required_error: "Please enter your email.",
+    }),
+  }),
+  event: z.object({
+    id: z.string({
+      required_error: "Please select an Event.",
+    }),
+    name: z.string({
+      required_error: "Please select an Event.",
+    }),
+  }),
+  location: z.object({
+    id: z.string({
+      required_error: "Please select an Event.",
+    }),
+    name: z.string({
+      required_error: "Please select an Event.",
+    }),
+  }),
+});
 
 export default function InventoryForm({
   categories,
   items,
   events,
+  locations,
 }: InventoryFormProps) {
   const [openPopover, setOpenPopover] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({});
   // const onSubmit = (data) => console.log(data);
   // console.log("clientCategories", categories);
   // console.log("clientItems", items);
@@ -126,14 +163,15 @@ export default function InventoryForm({
     setOpenPopover((current) => (current === popoverId ? null : popoverId));
   };
 
-  const form = useForm<FormValues>({
-    defaultValues: {
-      type: "",
-      volunteer: "",
-      location: "",
-      event: "",
-      items: [],
-    },
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    // defaultValues: {
+    //   type: "",
+    //   volunteer: "",
+    //   location: "",
+    //   event: "",
+    //   items: [],
+    // },
   });
 
   const {
@@ -145,20 +183,36 @@ export default function InventoryForm({
     name: "items", // The key of the field array
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-    return data;
+  const showConfirmationModal = (data) => {
+    setFormData(data);
+    setIsModalOpen(true);
   };
 
-  async function handleSubmit() {
-    const data = await form.handleSubmit(onSubmit)();
+  function confirmAndSubmit(data: unknown) {
     console.log("data", data);
+    // const result = createCheckoutOrder(data);
     toast({
       title: "Sucessfully Submitted:",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           Sucessfully Submitted:
-          {/* <code className="text-white">{JSON.stringify(data, null, 2)}</code> */}
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    });
+  }
+
+  function onSubmit(data: unknown) {
+    console.log("form submitted", data);
+
+    // const result = createCheckoutOrder(data);
+
+    toast({
+      title: "Sucessfully Submitted:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          Sucessfully Submitted:
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),
     });
@@ -175,24 +229,8 @@ export default function InventoryForm({
   }
 
   // useEffect(() => {
-  //   // Call fetchData only if the user is authenticated
-  //   const loadData = async () => {
-  //     try {
-  //       const fetchedCategories = await fetchCategories();
-  //       console.log("categories", fetchedCategories);
-  //       setCategories(fetchedCategories?.data.boards[0].groups);
-  //     } catch (error) {
-  //       console.error("Failed to fetch data:", error);
-  //       // Handle error or set data to null/empty state
-  //     }
-  //   };
-
-  //   void loadData();
-  // }, []);
-
-  useEffect(() => {
-    console.log("openPopover", openPopover);
-  }, [openPopover]);
+  //   console.log("openPopover", openPopover);
+  // }, [openPopover]);
 
   useEffect(() => {
     const loadFilteredItems = () => {
@@ -219,10 +257,13 @@ export default function InventoryForm({
 
   return (
     <div className="w-full flex-1 rounded-md border p-3 shadow-md md:w-3/5 md:p-5">
-      <p className="text-center font-medium">Inventory Form</p>
+      <p className="mb-5 text-center text-lg font-medium">
+        D5 Office of Safety Resource Inventory Form
+      </p>
       <Form {...form}>
         <form
-          // onSubmit={form.handleSubmit(onSubmit)}
+          // onSubmit={form.handleSubmit(showConfirmationModal)}
+          onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-4"
         >
           <FormField
@@ -231,13 +272,13 @@ export default function InventoryForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Type</FormLabel>
+
                 <Select
-                  required
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="data-[placeholder]:font-medium data-[placeholder]:text-muted-foreground">
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -250,6 +291,38 @@ export default function InventoryForm({
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="volunteer.name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Volunteer Name</FormLabel>
+                <FormDescription>Please enter your name.</FormDescription>
+                <FormControl>
+                  <Input placeholder="John Smith" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="volunteer.email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Volunteer Email</FormLabel>
+                <FormDescription>Please enter your email.</FormDescription>
+                <FormControl>
+                  <Input placeholder="name@gmail.com" {...field} type="email" />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name={`event`}
@@ -259,7 +332,6 @@ export default function InventoryForm({
                   Event
                 </FormLabel>
 
-                {field.name}
                 <Popover
                   open={openPopover === `${field.name}`}
                   onOpenChange={() => handleOpenChange(`${field.name}`)}
@@ -271,10 +343,11 @@ export default function InventoryForm({
                         role="combobox"
                         className={cn(
                           "w-full justify-between",
-                          !field.value.name && "text-muted-foreground",
+                          !field.value?.name && "text-muted-foreground",
                         )}
+                        aria-required
                       >
-                        {field.value.name ?? "Select event"}
+                        {field.value?.name ?? "Select event"}
                         <TbCaretUpDownFilled className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </FormControl>
@@ -335,305 +408,160 @@ export default function InventoryForm({
             )}
           />
 
+          <FormField
+            control={form.control}
+            name={`location`}
+            render={({ field }) => (
+              <FormItem className="flex w-full flex-col">
+                <FormLabel className="flex items-start justify-between">
+                  Pickup Location
+                </FormLabel>
+
+                <Popover
+                  open={openPopover === `${field.name}`}
+                  onOpenChange={() => handleOpenChange(`${field.name}`)}
+                >
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value
+                          ? locations.find(
+                              (location) => location.id === field.value.id,
+                            )?.name
+                          : "Select pickup location"}
+                        <TbCaretUpDownFilled className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search locations..."
+                        className="h-9"
+                      />
+                      <CommandEmpty>No location found.</CommandEmpty>
+                      <ScrollArea className="h-[200px]">
+                        <CommandGroup>
+                          {locations.map((location) => (
+                            <CommandItem
+                              value={location.name}
+                              key={location.id}
+                              onSelect={() => {
+                                form.setValue(`location`, {
+                                  name: location.name,
+                                  id: location.id,
+                                });
+                                setOpenPopover(false);
+                              }}
+                            >
+                              {location.name}
+                              <CheckIcon
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  location.id === field.value?.id
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </ScrollArea>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div>
+            <hr />
+            <h3 className="mt-5 font-medium">Item Selection</h3>
+          </div>
+
           {itemFields.map((field, index) => (
             <div
               key={field.id}
-              className="flex w-full flex-col flex-wrap space-y-3 rounded-sm bg-slate-100 p-3"
+              className="flex w-full flex-col flex-wrap rounded-sm "
             >
-              <FormField
-                control={form.control}
-                name={`items.${index}.category`}
-                render={({ field }) => (
-                  <FormItem className="flex w-full flex-col">
-                    <FormLabel className="flex items-start justify-between">
-                      Category
-                    </FormLabel>
+              <span className="p-3">{`Item ${index + 1}`}</span>
 
-                    {/* {field.name} */}
-                    <Popover
-                      open={openPopover === `${field.name}`}
-                      onOpenChange={() => handleOpenChange(`${field.name}`)}
-                    >
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full justify-between",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value
-                              ? categories.find(
-                                  (category) => category.id === field.value.id,
-                                )?.title
-                              : "Select category"}
-                            <TbCaretUpDownFilled className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                        <Command>
-                          <CommandInput
-                            placeholder="Search categories..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No framework found.</CommandEmpty>
-                          <ScrollArea className="h-[200px]">
-                            <CommandGroup>
-                              {categories.map((category) => (
-                                <CommandItem
-                                  value={category.title}
-                                  key={category.id}
-                                  onSelect={() => {
-                                    form.setValue(`items.${index}.category`, {
-                                      title: category.title,
-                                      id: category.id,
-                                    });
-                                    form.setValue(
-                                      `items.${index}.name`,
-                                      undefined,
-                                    );
-                                    setSelectedCategory(category.id);
-                                    setOpenPopover(false);
-                                  }}
-                                >
-                                  {category.title}
-                                  <CheckIcon
-                                    className={cn(
-                                      "ml-auto h-4 w-4",
-                                      category.id === field.value?.id
-                                        ? "opacity-100"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </ScrollArea>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name={`items.${index}`}
-                render={({ field }) => (
-                  <FormItem className="flex w-[100%] flex-col">
-                    <FormLabel>Product</FormLabel>
-                    {/* {field.name} */}
-                    <Popover
-                      open={openPopover === `${field.name}`}
-                      onOpenChange={() => handleOpenChange(`${field.name}`)}
-                    >
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full justify-between",
-                              !field.value && "text-muted-foreground",
-                            )}
-                            disabled={!form.watch(`items.${index}.category`)}
-                          >
-                            {field.value.name
-                              ? field.value.name
-                              : !form.watch(`items.${index}.category`)
-                              ? "Select a category first"
-                              : "Select Product"}
-
-                            <TbCaretUpDownFilled className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                        <Command
-                          filter={(value, search) => {
-                            if (value.includes(search)) return 1;
-                            return 0;
-                          }}
-                        >
-                          <CommandInput
-                            placeholder="Search products..."
-                            className="h-9"
-                          />
-                          <CommandEmpty>No framework found.</CommandEmpty>
-                          <ScrollArea className="h-[300px]">
-                            <CommandGroup>
-                              {filteredItems.map((item) => (
-                                <CommandItem
-                                  value={item.name.replace(/"/g, '\\"')}
-                                  key={item.id}
-                                  className="text-base font-medium"
-                                  onSelect={() => {
-                                    form.setValue(
-                                      `items.${index}.name`,
-                                      item.name,
-                                    );
-                                    form.setValue(`items.${index}.id`, item.id);
-                                    setOpenPopover(false);
-                                  }}
-                                >
-                                  <div className="flex items-center gap-x-5">
-                                    <Image
-                                      className="min-w-[150px]"
-                                      src={
-                                        item.assets[0]?.public_url ??
-                                        "https://static.thenounproject.com/png/261694-200.png"
-                                      }
-                                      alt="product image"
-                                      width={100}
-                                      height={100}
-                                    />
-                                    {item.name}
-                                  </div>
-
-                                  <CheckIcon
-                                    className={cn(
-                                      "ml-auto h-4 w-4",
-                                      item.id === field.value?.id
-                                        ? "opacity-100"
-                                        : "opacity-0",
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </ScrollArea>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-between">
+              <div className="space-y-3 bg-slate-100 p-3">
                 <FormField
                   control={form.control}
-                  name={`items.${index}.quantity`}
+                  name={`items.${index}.category`}
                   render={({ field }) => (
-                    <FormItem className="flex w-[30%] flex-col">
-                      <FormLabel>Quantity</FormLabel>
-                      {/* {field.name} */}
-                      <Input
-                        {...field}
-                        type="number"
-                        min="1" // Ensure quantity is at least 1
-                        placeholder="Quantity"
-                        className="" // Adjust width as necessary
-                        disabled={!form.watch(`items.${index}.category`)}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      className="z-50 h-10 w-10 self-end bg-red-700 p-1 text-white"
-                    >
-                      <TbTrashX className="h-7 w-7 !text-white" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="flex w-11/12 flex-col gap-y-5 space-y-5 rounded-md sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>
-                        Are you sure you want to delete?
-                      </DialogTitle>
-                      <DialogDescription>
-                        This will permanently delete the item from your order.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex justify-between space-x-5">
-                      <DialogClose asChild>
-                        <Button className="w-full" type="button">
-                          Go Back
-                        </Button>
-                      </DialogClose>
-                      <DialogClose asChild>
-                        <Button
-                          variant={"destructive"}
-                          className="w-full"
-                          type="submit"
-                          onClick={() => onDelete(index)}
-                        >
-                          Delete
-                        </Button>
-                      </DialogClose>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-              {/* <div className="flex w-full space-x-3">
-                <Controller
-                key={field.id}
-                name={`items.${index}`}
-                  control={form.control}
-                  render={({
-                    field: { onChange, value: fieldValue },
-                    fieldState: { error },
-                  }) => {
-                    const value = fieldValue;
-                    return (
+                    <FormItem className="flex w-full flex-col">
+                      <FormLabel className="flex items-start justify-between">
+                        Category
+                      </FormLabel>
+
                       <Popover
-                        modal={true}
-                        open={value?.open || false}
-                        onOpenChange={(isOpen) =>
-                          onChange({ ...value, open: isOpen })
-                        }
+                        open={openPopover === `${field.name}`}
+                        onOpenChange={() => handleOpenChange(`${field.name}`)}
                       >
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={value.open || false}
-                            className="w-[80%] justify-between overflow-hidden text-ellipsis whitespace-nowrap text-left"
-                          >
-                            {value.name || "Select items..."}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                "w-full justify-between",
+                                !field.value && "text-muted-foreground",
+                              )}
+                            >
+                              {field.value
+                                ? categories.find(
+                                    (category) =>
+                                      category.id === field.value.id,
+                                  )?.title
+                                : "Select category"}
+                              <TbCaretUpDownFilled className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
                         </PopoverTrigger>
                         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                           <Command>
-                            <CommandInput placeholder="Search items..." />
-                            <CommandEmpty>No items found.</CommandEmpty>
+                            <CommandInput
+                              placeholder="Search categories..."
+                              className="h-9"
+                            />
+                            <CommandEmpty>No framework found.</CommandEmpty>
                             <ScrollArea className="h-[200px]">
                               <CommandGroup>
-                                {items?.map((item) => (
+                                {categories.map((category) => (
                                   <CommandItem
-                                    key={item.id}
-                                    value={item.name}
+                                    value={category.title}
+                                    key={category.id}
                                     onSelect={() => {
-                                      onChange({
-                                        ...value,
-                                        name: item.name,
-                                        id: item.id,
-                                        open: false,
+                                      form.setValue(`items.${index}.category`, {
+                                        title: category.title,
+                                        id: category.id,
                                       });
+                                      form.setValue(
+                                        `items.${index}.name`,
+                                        undefined,
+                                      );
+                                      setSelectedCategory(category.id);
+                                      setOpenPopover(false);
                                     }}
                                   >
-                                    <Check
+                                    {category.title}
+                                    <CheckIcon
                                       className={cn(
-                                        "mr-2 h-4 w-4",
-                                        value.id === item.id
+                                        "ml-auto h-4 w-4",
+                                        category.id === field.value?.id
                                           ? "opacity-100"
                                           : "opacity-0",
                                       )}
                                     />
-                                    <Image
-                                      src="https://static.thenounproject.com/png/261694-200.png"
-                                      alt="product image"
-                                      width={50}
-                                      height={50}
-                                    />
-                                    {item.name}
                                   </CommandItem>
                                 ))}
                               </CommandGroup>
@@ -641,29 +569,166 @@ export default function InventoryForm({
                           </Command>
                         </PopoverContent>
                       </Popover>
-                    );
-                  }}
-                />
-                <Controller
-                  name={`items.${index}.quantity`}
-                  control={form.control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="number"
-                      min="1" // Ensure quantity is at least 1
-                      placeholder="Quantity"
-                      className="w-[20%]" // Adjust width as necessary
-                    />
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
-                <Button
-                  className="bg-red-700 p-1 text-white"
-                  onClick={() => remove(index)}
-                >
-                  <TbTrashX className="h-7 w-7 !text-white" />
-                </Button>
-              </div> */}
+
+                <FormField
+                  control={form.control}
+                  name={`items.${index}`}
+                  render={({ field }) => (
+                    <FormItem className="flex w-[100%] flex-col">
+                      <FormLabel>Product</FormLabel>
+
+                      <Popover
+                        open={openPopover === `${field.name}`}
+                        onOpenChange={() => handleOpenChange(`${field.name}`)}
+                      >
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                "w-full justify-between",
+                                !field.value && "text-muted-foreground",
+                              )}
+                              disabled={!form.watch(`items.${index}.category`)}
+                            >
+                              {field.value.name
+                                ? field.value.name
+                                : !form.watch(`items.${index}.category`)
+                                ? "Select a category first"
+                                : "Select Product"}
+
+                              <TbCaretUpDownFilled className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                          <Command
+                            filter={(value, search) => {
+                              if (value.includes(search)) return 1;
+                              return 0;
+                            }}
+                          >
+                            <CommandInput
+                              placeholder="Search products..."
+                              className="h-9"
+                            />
+                            <CommandEmpty>No framework found.</CommandEmpty>
+                            <ScrollArea className="h-[300px]">
+                              <CommandGroup>
+                                {filteredItems.map((item) => (
+                                  <CommandItem
+                                    value={item.name.replace(/"/g, '\\"')}
+                                    key={item.id}
+                                    className="text-base font-medium"
+                                    onSelect={() => {
+                                      form.setValue(
+                                        `items.${index}.name`,
+                                        item.name,
+                                      );
+                                      form.setValue(
+                                        `items.${index}.id`,
+                                        item.id,
+                                      );
+                                      setOpenPopover(false);
+                                    }}
+                                  >
+                                    <div className="flex items-center gap-x-5">
+                                      <Image
+                                        className="min-w-[120px]"
+                                        src={
+                                          item.assets[0]?.public_url ??
+                                          "https://static.thenounproject.com/png/261694-200.png"
+                                        }
+                                        alt="product image"
+                                        width={100}
+                                        height={100}
+                                      />
+                                      {item.name}
+                                    </div>
+
+                                    <CheckIcon
+                                      className={cn(
+                                        "ml-auto h-4 w-4",
+                                        item.id === field.value?.id
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </ScrollArea>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-between">
+                  <FormField
+                    control={form.control}
+                    name={`items.${index}.quantity`}
+                    render={({ field }) => (
+                      <FormItem className="flex w-[30%] flex-col">
+                        <FormLabel>Quantity</FormLabel>
+
+                        <Input
+                          {...field}
+                          type="number"
+                          min="1" // Ensure quantity is at least 1
+                          placeholder="Quantity"
+                          className="" // Adjust width as necessary
+                          disabled={!form.watch(`items.${index}.category`)}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        type="button"
+                        className="z-50 h-10 w-10 self-end bg-red-700 p-1 text-white"
+                      >
+                        <TbTrashX className="h-7 w-7 !text-white" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="flex w-11/12 flex-col gap-y-5 space-y-5 rounded-md sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>
+                          Are you sure you want to delete?
+                        </DialogTitle>
+                        <DialogDescription>
+                          This will permanently delete the item from your order.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex justify-between space-x-5">
+                        <DialogClose asChild>
+                          <Button className="w-full" type="button">
+                            Go Back
+                          </Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                          <Button
+                            variant={"destructive"}
+                            className="w-full"
+                            type="submit"
+                            onClick={() => onDelete(index)}
+                          >
+                            Delete
+                          </Button>
+                        </DialogClose>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
             </div>
           ))}
           <Button
@@ -677,7 +742,7 @@ export default function InventoryForm({
           >
             Add Item
           </Button>
-          <Dialog>
+          {/* <Dialog>
             <DialogTrigger asChild>
               <Button className="w-full" type="button">
                 Submit
@@ -687,8 +752,7 @@ export default function InventoryForm({
               <DialogHeader>
                 <DialogTitle>Are you sure you are ready to submit?</DialogTitle>
                 <DialogDescription>
-                  This will permanently delete your account and remove your data
-                  from our servers.
+                  This will submit the form and refresh the page.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex justify-between space-x-5">
@@ -705,14 +769,51 @@ export default function InventoryForm({
                   <Button
                     className="w-full"
                     type="submit"
-                    onClick={handleSubmit}
+                    onClick={confirmAndSubmit}
                   >
                     Submit
                   </Button>
                 </DialogClose>
               </div>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
+          <Button className="w-full" type="submit">
+            Submit
+          </Button>
+          {isModalOpen && (
+            <Dialog>
+              <DialogContent className="flex flex-col gap-y-5 space-y-5">
+                <DialogHeader>
+                  <DialogTitle>
+                    Are you sure you are ready to submit?
+                  </DialogTitle>
+                  <DialogDescription>
+                    This will submit the form and refresh the page.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex justify-between space-x-5">
+                  <DialogClose asChild>
+                    <Button
+                      className="w-full"
+                      type="button"
+                      variant={"destructive"}
+                    >
+                      Go Back
+                    </Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      onClick={confirmAndSubmit}
+                    >
+                      Submit
+                    </Button>
+                  </DialogClose>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </form>
       </Form>
     </div>

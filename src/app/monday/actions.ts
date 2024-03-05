@@ -86,6 +86,28 @@ export async function fetchItemsByCategory() {
   }
 }
 
+export async function createCheckoutOrder(data: unknown) {
+  try {
+    console.log("createCheckoutOrder", data);
+    const newItemId = await createItem(data);
+    console.log("result1", newItemId?.data.create_item.id);
+    // const result2 = await Promise.all(
+    //   data.items.map(async (item) => {
+    //     const response = await createSubitem(
+    //       item,
+    //       newItemId?.data.create_item.id,
+    //     );
+    //     // return response.json();
+    //   }),
+    // );
+    // const query = "query { boards (ids: 6080281301) {items {id name}}}";
+    // const result = await monday.api(query, options);
+    // return result;
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
 export async function createItem(data) {
   console.log("createItem_data", data);
   const item_name =
@@ -94,7 +116,7 @@ export async function createItem(data) {
   try {
     // const mutation =
     //   'mutation { create_item (board_id: 5980720965, group_id: "topics", item_name: "Checkout Order") { id } }';
-    const mutation = `mutation { create_item (board_id: 5980720965, group_id: \"${groupId}\", item_name: \"${item_name}\", column_values: \"{ \\\"text0\\\": \\\"Pickup Location 1\\\",\\\"text1\\\": \\\"Event 1\\\", \\\"text\\\": \\\"Volunteer 1\\\" }\") { id board { id } } }`;
+    const mutation = `mutation { create_item (board_id: 5980720965, group_id: \"${groupId}\", item_name: \"${item_name}\", column_values: \"{ \\\"email\\\": \\\"${data.volunteer.email} ${data.volunteer.email}\\\", \\\"text0\\\": \\\"${data.location.name}\\\",\\\"text1\\\": \\\"${data.event.name}\\\", \\\"text\\\": \\\"${data.volunteer.name}\\\" }\") { id board { id } } }`;
     const result = await monday.api(mutation, options);
     console.log("createItem", result);
     return result;
@@ -156,21 +178,10 @@ export async function fetchEvents() {
   }
 }
 
-// export async function fetchEvents() {
-//   try {
-//     const query =
-//       "{ boards (ids: 6080281301) { items_page (limit: 500) { items { id name } } } }";
-//     const result = await monday.api(query, options);
-//     return result;
-//   } catch (error) {
-//     console.log("error", error);
-//   }
-// }
-
-export async function fetchVolunteers() {
+export async function fetchLocations() {
   try {
     const query =
-      "{ boards (ids: 6091907921) { items_page (limit: 500) { items { id name } } } }";
+      "{ boards (ids: 5987199810) { items_page (limit: 500) { items { id name } } } }";
     const result = await monday.api(query, options);
     return result;
   } catch (error) {
@@ -178,23 +189,12 @@ export async function fetchVolunteers() {
   }
 }
 
-export async function createCheckoutOrder(data: unknown) {
+export async function fetchVolunteers() {
   try {
-    console.log("createCheckoutOrder", data);
-    const newItemId = await createItem(data);
-    console.log("result1", newItemId?.data.create_item.id);
-    const result2 = await Promise.all(
-      data.items.map(async (item) => {
-        const response = await createSubitem(
-          item,
-          newItemId?.data.create_item.id,
-        );
-        // return response.json();
-      }),
-    );
-    // const query = "query { boards (ids: 6080281301) {items {id name}}}";
-    // const result = await monday.api(query, options);
-    // return result;
+    const query =
+      "{ boards (ids: 6091907921) { items_page (limit: 500) { items { id name } } } }";
+    const result = await monday.api(query, options);
+    return result;
   } catch (error) {
     console.log("error", error);
   }

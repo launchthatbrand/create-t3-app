@@ -30,39 +30,28 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fetchLocations } from "../monday/actions";
+import { toast } from "./ui/use-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
+  type: z
+    .string({
+      required_error: "Please select a form type.",
+    })
+    .min(2, {
+      message: "Username must be at least 2 characters.",
+    }),
 });
 
-export function ProfileForm() {
-  useEffect(() => {
-    // Call fetchData only if the user is authenticated
-    const loadData = async () => {
-      try {
-        const fetchedLocations = await fetchLocations();
-        setLocations(fetchedLocations?.data.boards[0].items);
-        form.reset();
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-        // Handle error or set data to null/empty state
-      }
-    };
-
-    void loadData();
-  }, []);
-  const [locations, setLocations] = useState();
+export function DefaultForm() {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "Pickup Location 1",
-    },
+    // defaultValues: {
+    //   username: "",
+    // },
   });
 
   // 2. Define a submit handler.
@@ -70,6 +59,15 @@ export function ProfileForm() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
+    toast({
+      title: "Sucessfully Submitted:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          Sucessfully Submitted:
+          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+        </pre>
+      ),
+    });
   }
 
   return (
@@ -77,32 +75,22 @@ export function ProfileForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="username"
+          name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-                {/* <Select>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a location" />
+              <FormLabel>Type</FormLabel>
+
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="data-[placeholder]:font-medium data-[placeholder]:text-muted-foreground">
+                    <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Locations</SelectLabel>
-                      {locations?.map((item, index) => (
-                        // Render each item. Ensure you have a unique key for each child.
-                        <SelectItem key={index} value={item.name}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select> */}
-              </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="checkin">Check-in</SelectItem>
+                  <SelectItem value="checkout">Check-out</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

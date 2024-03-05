@@ -167,6 +167,7 @@ export default function InventoryForm() {
         console.log("locations", fetchedLocations);
         console.log("events", fetchedEvents);
         console.log("items", fetchedItems);
+        console.log("volunteers", fetchedVolunteers);
         setLocations(fetchedLocations?.data.boards[0].items_page.items);
         setEvents(fetchedEvents?.data.boards[0].items_page.items);
         setItems(fetchedItems?.data.boards[0].items_page.items);
@@ -195,9 +196,9 @@ export default function InventoryForm() {
               <FormItem>
                 <FormLabel>Type</FormLabel>
                 <Select
-                  required
                   onValueChange={field.onChange}
                   defaultValue={field.value}
+                  required
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -213,7 +214,7 @@ export default function InventoryForm() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="volunteer"
             render={({ field }) => (
@@ -241,8 +242,8 @@ export default function InventoryForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
-          <FormField
+          /> */}
+          {/* <FormField
             control={form.control}
             name="location"
             render={({ field }) => (
@@ -270,8 +271,8 @@ export default function InventoryForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
-          <FormField
+          /> */}
+          {/* <FormField
             control={form.control}
             name="event"
             render={({ field }) => (
@@ -299,12 +300,12 @@ export default function InventoryForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
-          <div className="flex justify-between p-1">
+          /> */}
+          {/* <div className="flex justify-between p-1">
             <span>Items</span>
             <span className="pr-12">Quantity</span>
-          </div>
-          {itemFields.map((field, index) => (
+          </div> */}
+          {/* {itemFields.map((field, index) => (
             <div key={index} className="flex space-x-3">
               <Controller
                 key={field.id}
@@ -412,7 +413,7 @@ export default function InventoryForm() {
             }
           >
             Add Item
-          </Button>
+          </Button> */}
           <Button className="w-full" type="submit">
             Submit
           </Button>

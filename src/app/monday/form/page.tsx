@@ -7,16 +7,16 @@ import {
   fetchCategories,
   fetchItems,
   fetchEvents,
+  fetchLocations,
 } from "../actions";
+import { DefaultForm } from "~/app/_components/DefaultForm";
 
 async function page() {
   const fetchedEvents = await fetchEvents();
-  // console.log(
-  //   "fetchedLocations",
-  //   fetchedLocations?.data.items_page_by_column_values,
-  // );
   const events = fetchedEvents;
-  // console.log("fetchedLocations", locations);
+  const fetchedLocations = await fetchLocations();
+  const locations = fetchedLocations?.data.boards[0].items_page.items;
+  console.log("locations", locations);
   const fetchedCategories = await fetchCategories();
   const categories = fetchedCategories?.data.boards[0].groups as Category[];
   // console.log("fetchedCategories", categories);
@@ -26,7 +26,13 @@ async function page() {
 
   return (
     <div className="container flex flex-col items-center space-y-10">
-      <InventoryForm categories={categories} items={items} events={events} />
+      <InventoryForm
+        categories={categories}
+        items={items}
+        events={events}
+        locations={locations}
+      />
+      <DefaultForm />
     </div>
   );
 }
