@@ -26,12 +26,12 @@ async function page() {
 
   return (
     <div className="container flex flex-col items-center space-y-10">
-      <InventoryForm
+      {/* <InventoryForm
         categories={categories}
         items={items}
         events={events}
         locations={locations}
-      />
+      /> */}
       <DefaultForm />
     </div>
   );
