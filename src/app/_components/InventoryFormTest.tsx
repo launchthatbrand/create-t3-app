@@ -139,6 +139,27 @@ const FormSchema = z.object({
       required_error: "Please select an Event.",
     }),
   }),
+  items: z.array(
+    z.object({
+      category: z.object({
+        id: z.string({
+          required_error: "Please select an Event.",
+        }),
+        title: z.string({
+          required_error: "Please select an Event.",
+        }),
+      }),
+      id: z.string({
+        required_error: "Please select an Event.",
+      }),
+      name: z.string({
+        required_error: "Please select an Event.",
+      }),
+      quantity: z.number({
+        required_error: "Please select an Event.",
+      }),
+    }),
+  ),
 });
 
 export default function InventoryForm({
@@ -200,12 +221,13 @@ export default function InventoryForm({
         </pre>
       ),
     });
+    form.reset();
   }
 
   function onSubmit(data: unknown) {
     console.log("form submitted", data);
 
-    // const result = createCheckoutOrder(data);
+    const result = createCheckoutOrder(data);
 
     toast({
       title: "Sucessfully Submitted:",
@@ -216,6 +238,7 @@ export default function InventoryForm({
         </pre>
       ),
     });
+    form.reset();
   }
 
   function onDelete(index: number) {

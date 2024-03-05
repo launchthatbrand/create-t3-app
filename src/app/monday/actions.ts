@@ -90,19 +90,19 @@ export async function createCheckoutOrder(data: unknown) {
   try {
     console.log("createCheckoutOrder", data);
     const newItemId = await createItem(data);
-    console.log("result1", newItemId?.data.create_item.id);
-    // const result2 = await Promise.all(
-    //   data.items.map(async (item) => {
-    //     const response = await createSubitem(
-    //       item,
-    //       newItemId?.data.create_item.id,
-    //     );
-    //     // return response.json();
-    //   }),
-    // );
-    // const query = "query { boards (ids: 6080281301) {items {id name}}}";
-    // const result = await monday.api(query, options);
-    // return result;
+    console.log("result1", newItemId?.data.change_multiple_column_values.id);
+    const result2 = await Promise.all(
+      data.items.map(async (item) => {
+        const response = await createSubitem(
+          item,
+          newItemId?.data.change_multiple_column_values.id,
+        );
+        // return response.json();
+      }),
+    );
+    const query = "query { boards (ids: 6080281301) {items {id name}}}";
+    const result = await monday.api(query, options);
+    return result;
   } catch (error) {
     console.log("error", error);
   }
@@ -116,10 +116,15 @@ export async function createItem(data) {
   try {
     // const mutation =
     //   'mutation { create_item (board_id: 5980720965, group_id: "topics", item_name: "Checkout Order") { id } }';
-    const mutation = `mutation { create_item (board_id: 5980720965, group_id: \"${groupId}\", item_name: \"${item_name}\", column_values: \"{ \\\"email\\\": \\\"${data.volunteer.email} ${data.volunteer.email}\\\", \\\"text0\\\": \\\"${data.location.name}\\\",\\\"text1\\\": \\\"${data.event.name}\\\", \\\"text\\\": \\\"${data.volunteer.name}\\\" }\") { id board { id } } }`;
-    const result = await monday.api(mutation, options);
-    console.log("createItem", result);
-    return result;
+    const mutation1 = `mutation { create_item (board_id: 5980720965, group_id: \"${groupId}\", item_name: \"${item_name}\", column_values: \"{ \\\"email\\\": \\\"${data.volunteer.email} ${data.volunteer.email}\\\", \\\"text0\\\": \\\"${data.location.name}\\\",\\\"text1\\\": \\\"${data.event.name}\\\", \\\"text\\\": \\\"${data.volunteer.name}\\\" }\") { id board { id } } }`;
+    const result1 = await monday.api(mutation1, options);
+    console.log("createItem_result1", result1);
+    const item_id = result1.data.create_item.id;
+    console.log("createItem_itemID", item_id);
+    const mutation2 = `mutation { change_multiple_column_values (board_id: 5980720965, item_id: \"${item_id}\", column_values: \"{ \\\"name\\\": \\\"${item_name} : ${item_id}\\\" }\") { id board { id } } }`;
+    const result2 = await monday.api(mutation2, options);
+    console.log("createItem_result2", result2);
+    return result2;
   } catch (error) {
     console.log("error", error);
   }
@@ -130,6 +135,8 @@ export async function createSubitem(data: unknown, newItemId: string) {
     // console.log("createSubitem", data);
     const { name, id, quantity } = data;
     console.log("name", name);
+    console.log("id", id);
+    console.log("quantity", quantity);
     const mutation = `mutation { create_subitem (parent_item_id: ${newItemId}, item_name: \"${name}\", column_values: \"{ \\\"numbers\\\": \\\"${quantity}\\\",\\\"text_1\\\": \\\"${id}\\\" }\") { id board { id } } }`;
     const result = await monday.api(mutation, options);
     console.log("createSubitem", result);
