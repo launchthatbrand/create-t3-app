@@ -21,7 +21,7 @@ async function page() {
   const categories = fetchedCategories?.data.boards[0].groups as Category[];
   // console.log("fetchedCategories", categories);
   const fetchedItems = await fetchItems();
-  const items = fetchedItems?.data.boards[0].items_page.items;
+  const items = fetchedItems?.data?.boards[0].items_page.items;
   // console.log("fetchedItems", fetchedItems?.data.boards[0].items_page.items);
 
   return (

@@ -74,6 +74,9 @@ import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import Confetti from "react-confetti";
+import ConfettiComponent from "./Confetti";
+
 interface Item {
   id: string;
   name: string;
@@ -161,7 +164,7 @@ const FormSchema = z.object({
       name: z.string({
         required_error: "Please select an Event.",
       }),
-      quantity: z.number({
+      quantity: z.string({
         required_error: "Please select an Event.",
       }),
     }),
@@ -180,6 +183,7 @@ export default function InventoryForm({
   const [filteredItems, setFilteredItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({});
+  const [isConfettiVisible, setIsConfettiVisible] = useState(false);
   // const onSubmit = (data) => console.log(data);
   // console.log("clientCategories", categories);
   // console.log("clientItems", items);
@@ -229,14 +233,22 @@ export default function InventoryForm({
     const result = createCheckoutOrder(formData);
     form.reset();
     setIsModalOpen(false);
+    // Show confetti
+    setIsConfettiVisible(true);
+
+    // Hide confetti after 5 seconds
+    setTimeout(() => setIsConfettiVisible(false), 5000);
+
+    //Show Toast
     toast({
       title: "Sucessfully Submitted:",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           Sucessfully Submitted:
-          <code className="text-white">
+          <ConfettiComponent />
+          {/* <code className="text-white">
             {JSON.stringify(formData, null, 2)}
-          </code>
+          </code> */}
         </pre>
       ),
     });
@@ -280,7 +292,7 @@ export default function InventoryForm({
   }, [selectedCategory]);
 
   return (
-    <div className="flex flex-1 flex-col space-y-3 md:w-3/5 md:p-5">
+    <div className="flex flex-1 flex-col space-y-20 md:w-3/5 md:p-5">
       {/* <Button className="self-end">Search Previous Check-out Orders</Button> */}
       <div className="mb-20 w-full rounded-md border p-3 shadow-md">
         <div className="mb-5 text-center text-lg font-medium">
@@ -290,7 +302,7 @@ export default function InventoryForm({
           <form
             // onSubmit={form.handleSubmit(showConfirmationModal)}
             onSubmit={form.handleSubmit(showConfirmationModal)}
-            className="w-full space-y-4"
+            className="w-full space-y-10"
           >
             <FormField
               control={form.control}
@@ -358,7 +370,7 @@ export default function InventoryForm({
                   <FormLabel className="flex items-start justify-between">
                     Event
                   </FormLabel>
-
+                  <FormDescription>Please select an event.</FormDescription>
                   <Popover
                     open={openPopover === `${field.name}`}
                     onOpenChange={() => handleOpenChange(`${field.name}`)}
@@ -769,7 +781,7 @@ export default function InventoryForm({
               type="button"
               onClick={() =>
                 append({
-                  quantity: 1,
+                  quantity: "1",
                 })
               }
             >
@@ -785,38 +797,38 @@ export default function InventoryForm({
             </Button>
           </form>
         </Form>
-        {isModalOpen && (
-          <Dialog open>
-            <DialogContent className="flex flex-col gap-y-5 space-y-5">
-              <DialogHeader>
-                <DialogTitle>Are you sure you are ready to submit?</DialogTitle>
-                <DialogDescription>
-                  This will submit the form and refresh the page.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex justify-between space-x-5">
-                <DialogClose asChild>
-                  <Button
-                    className="w-full"
-                    type="button"
-                    variant={"destructive"}
-                  >
-                    Go Back
-                  </Button>
-                </DialogClose>
-                <DialogClose asChild>
-                  <Button
-                    className="w-full"
-                    type="submit"
-                    onClick={confirmAndSubmit}
-                  >
-                    Submit
-                  </Button>
-                </DialogClose>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+        {/* {isModalOpen && ( */}
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent className="flex flex-col gap-y-5 space-y-5">
+            <DialogHeader>
+              <DialogTitle>Are you sure you are ready to submit?</DialogTitle>
+              <DialogDescription>
+                This will submit the form and refresh the page.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-between space-x-5">
+              <DialogClose asChild>
+                <Button
+                  className="w-full"
+                  type="button"
+                  variant={"destructive"}
+                >
+                  Go Back
+                </Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button
+                  className="w-full"
+                  type="submit"
+                  onClick={confirmAndSubmit}
+                >
+                  Submit
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
+        {/* )} */}
       </div>
     </div>
   );

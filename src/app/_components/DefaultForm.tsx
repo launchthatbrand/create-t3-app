@@ -34,6 +34,8 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ConfettiComponent from "./Confetti";
+import Confetti from "react-confetti";
 
 const FormSchema = z.object({
   volunteer: z.object({
@@ -47,6 +49,7 @@ const FormSchema = z.object({
 
 export function DefaultForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfettiVisible, setIsConfettiVisible] = useState(false);
   const [formData, setFormData] = useState({});
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -66,46 +69,22 @@ export function DefaultForm() {
   function confirmAndSubmit() {
     console.log("Form data:", formData);
     // Submit formData here
+
+    //clear data
     form.reset();
-    setIsModalOpen(false);
-    return (
-      <Dialog open>
-        <DialogContent className="flex flex-col gap-y-5 space-y-5">
-          <DialogHeader>
-            <DialogTitle>Are you sure you are ready to submit?</DialogTitle>
-            <DialogDescription>
-              This will submit the form and refresh the page.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-between space-x-5">
-            <DialogClose asChild>
-              <Button className="w-full" type="button" variant={"destructive"}>
-                Go Back
-              </Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button
-                className="w-full"
-                type="submit"
-                onClick={confirmAndSubmit}
-              >
-                Submit
-              </Button>
-            </DialogClose>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
+    setFormData({});
+
+    // Show confetti
+    setIsConfettiVisible(true);
+
+    // Hide confetti after 5 seconds
+    setTimeout(() => setIsConfettiVisible(false), 5000);
+
     // toast({
-    //   title: "Sucessfully Submitted:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       Sucessfully Submitted:
-    //       <code className="text-white">
-    //         {JSON.stringify(formData, null, 2)}
-    //       </code>
-    //     </pre>
-    //   ),
+    //   title: "Sucessfully Submitted",
+    //   duration: 5000,
+
+    //   description: <ConfettiComponent />,
     // });
   }
 
@@ -123,6 +102,8 @@ export function DefaultForm() {
   //   });
   //   form.reset();
   // }
+
+  const isSubmitDisabled = Object.keys(formData).length === 0;
 
   return (
     <Form {...form}>
@@ -152,38 +133,36 @@ export function DefaultForm() {
         </Button>
       </form>
 
-      {isModalOpen && (
-        <Dialog open>
-          <DialogContent className="flex flex-col gap-y-5 space-y-5">
-            <DialogHeader>
-              <DialogTitle>Are you sure you are ready to submit?</DialogTitle>
-              <DialogDescription>
-                This will submit the form and refresh the page.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex justify-between space-x-5">
-              <DialogClose asChild>
-                <Button
-                  className="w-full"
-                  type="button"
-                  variant={"destructive"}
-                >
-                  Go Back
-                </Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button
-                  className="w-full"
-                  type="submit"
-                  onClick={confirmAndSubmit}
-                >
-                  Submit
-                </Button>
-              </DialogClose>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="flex flex-col gap-y-5 space-y-5">
+          <span>
+            {isConfettiVisible && (
+              <Confetti className="relative h-[100%] w-[100%]" />
+            )}
+          </span>
+          <DialogHeader>
+            <DialogTitle>Are you sure you are ready to submit?</DialogTitle>
+            <DialogDescription>
+              This will submit the form and refresh the page.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-between space-x-5">
+            <DialogClose asChild>
+              <Button className="w-full" type="button" variant={"destructive"}>
+                Go Back
+              </Button>
+            </DialogClose>
+            <Button
+              className="w-full"
+              type="submit"
+              onClick={confirmAndSubmit}
+              disabled={isSubmitDisabled}
+            >
+              Submit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Form>
   );
 }
