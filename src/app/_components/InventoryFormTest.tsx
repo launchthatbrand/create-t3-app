@@ -241,15 +241,19 @@ export default function InventoryForm({
 
     //Show Toast
     toast({
-      title: "Sucessfully Submitted:",
+      title: "Sucessfully Submitted",
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          Sucessfully Submitted:
+        <div className="min-h-[150px]">
           <ConfettiComponent />
-          {/* <code className="text-white">
-            {JSON.stringify(formData, null, 2)}
-          </code> */}
-        </pre>
+        </div>
+
+        // <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        //   Sucessfully Submitted:
+
+        //   {/* <code className="text-white">
+        //     {JSON.stringify(formData, null, 2)}
+        //   </code> */}
+        // </pre>
       ),
     });
   }
