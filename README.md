@@ -26,3 +26,5 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flaunchthatbrand%2Fcreate-t3-app%2Ftree%2Fv7.26.0-approuter-typc-drizzle-nextauth-supabase&env=DATABASE_URL,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DISCORD_CLIENT_ID,DISCORD_CLIENT_SECRET,NEXTAUTH_SECRET)
