@@ -21,6 +21,13 @@ const config = {
     );
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "nft.wsatraining.com",
+      },
+    ],
+  },
 };
 
 export default config;

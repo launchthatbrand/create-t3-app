@@ -30,7 +30,7 @@ export default function RootLayout({
         <ClientProvider>
           <TRPCReactProvider>
             <Header />
-            <main className="flex flex-1 items-center justify-center text-white">
+            <main className="container flex flex-1 items-center justify-center p-3 py-20 text-white">
               {children}
             </main>
             <Toaster />
