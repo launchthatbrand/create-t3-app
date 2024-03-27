@@ -11,6 +11,7 @@ import {
 } from "connectkit";
 import { useRouter } from "next/navigation";
 import { type AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { AuthProvider } from "~/contexts/AuthContext";
 
 function AfterSiweSignin(
   session: SIWESession | undefined,
@@ -83,13 +84,15 @@ export default function ClientProvider({
 }) {
   const router = useRouter();
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <SIWEProvider
-        {...siweConfig}
-        onSignIn={(session?: SIWESession) => AfterSiweSignin(session, router)}
-      >
-        <ConnectKitProvider>{children}</ConnectKitProvider>
-      </SIWEProvider>
-    </WagmiConfig>
+    <AuthProvider>
+      <WagmiConfig config={wagmiConfig}>
+        <SIWEProvider
+          {...siweConfig}
+          onSignIn={(session?: SIWESession) => AfterSiweSignin(session, router)}
+        >
+          <ConnectKitProvider>{children}</ConnectKitProvider>
+        </SIWEProvider>
+      </WagmiConfig>
+    </AuthProvider>
   );
 }
